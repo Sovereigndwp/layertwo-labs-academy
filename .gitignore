@@ -5,3 +5,8 @@ dist-ssr
 .DS_Store
 .vite
 *.tsbuildinfo
+
+# local agent state + secrets
+.claude/settings.local.json
+.env
+.env.local
