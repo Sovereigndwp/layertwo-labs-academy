@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // lessonData — ALL learner-facing copy for this lesson lives here.
 // ---------------------------------------------------------------------------
+import type { VerifiableClaim } from '../state/claims'
 // Components are dumb renderers driven by this file. To build a *new* LayerTwo
 // Labs lesson, copy this file, swap the content, and reuse the same engine and
 // components. Keep the factual guardrails (see `factBadge`) intact: Drivechain
@@ -86,6 +87,13 @@ export interface SourceNote {
 }
 
 export interface LessonData {
+  id: string
+  summary: string
+  audience: 'beginner' | 'intermediate' | 'advanced'
+  tags: string[]
+  estMinutes: number
+  prerequisites: string[]
+  claims: VerifiableClaim[]
   slug: string
   title: string
   promise: string
@@ -105,6 +113,14 @@ export interface LessonData {
 }
 
 export const lessonData: LessonData = {
+  id: 'create-a-sidechain',
+  summary:
+    'How a new Drivechain sidechain gets proposed, recognized by miners, activated, and connected back to Bitcoin.',
+  audience: 'beginner',
+  tags: ['drivechain', 'bip300', 'bip301', 'sidechains', 'layer2'],
+  estMinutes: 12,
+  prerequisites: [],
+  claims: [],
   slug: 'create-a-sidechain-without-breaking-bitcoin',
   title: 'Create a Sidechain Without Breaking Bitcoin',
   promise:
