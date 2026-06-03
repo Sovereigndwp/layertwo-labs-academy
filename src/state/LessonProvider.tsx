@@ -6,9 +6,7 @@ import {
   type ReactNode,
 } from 'react'
 import { lessonReducer } from './lessonReducer'
-import { initialLessonState, type LessonAction, type LessonState } from './types'
-
-const STORAGE_KEY = 'l2l:create-a-sidechain:v1'
+import { initialLessonState, STORAGE_VERSION, type LessonAction, type LessonState } from './types'
 
 interface LessonContextValue {
   state: LessonState
@@ -17,32 +15,33 @@ interface LessonContextValue {
 
 const LessonContext = createContext<LessonContextValue | null>(null)
 
-function loadInitial(): LessonState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return initialLessonState
-    const saved = JSON.parse(raw) as Partial<LessonState>
-    // Merge so new fields added later still get sane defaults.
-    return { ...initialLessonState, ...saved }
-  } catch {
-    return initialLessonState
-  }
-}
+export function LessonProvider({
+  lessonId,
+  children,
+}: {
+  lessonId: string
+  children: ReactNode
+}) {
+  const storageKey = `l2l:lesson:${lessonId}:v${STORAGE_VERSION}`
 
-export function LessonProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(
-    lessonReducer,
-    initialLessonState,
-    loadInitial,
-  )
+  const [state, dispatch] = useReducer(lessonReducer, initialLessonState, () => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      if (!raw) return initialLessonState
+      const saved = JSON.parse(raw) as Partial<LessonState>
+      return { ...initialLessonState, ...saved }
+    } catch {
+      return initialLessonState
+    }
+  })
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      localStorage.setItem(storageKey, JSON.stringify(state))
     } catch {
-      // Storage may be unavailable (private mode); progress just won't persist.
+      // storage unavailable (private mode) — progress just won't persist
     }
-  }, [state])
+  }, [state, storageKey])
 
   return (
     <LessonContext.Provider value={{ state, dispatch }}>

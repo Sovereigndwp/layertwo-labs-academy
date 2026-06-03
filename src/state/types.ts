@@ -7,6 +7,9 @@
 // Labs lesson can reuse this engine with a different lessonData file.
 // ---------------------------------------------------------------------------
 
+/** Bump when the persisted shape changes incompatibly. */
+export const STORAGE_VERSION = 1
+
 export type ActivationStatus =
   | 'not proposed'
   | 'proposed'
