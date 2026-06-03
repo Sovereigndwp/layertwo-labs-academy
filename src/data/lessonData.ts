@@ -288,9 +288,9 @@ export const lessonData: LessonData = {
       navLabel: 'Connect to Bitcoin',
       headline: 'The sidechain still needs a Bitcoin full node.',
       explain:
-        'To actually run Testchain, you point it at a Bitcoin full node — here, DriveNet. This is similar to how a Lightning node needs a Bitcoin node to talk to.',
-      actionHint: 'Connect Testchain to DriveNet.',
-      why: 'A sidechain does not float in space. Bitcoin stays its reference point for what is real.',
+        'To actually run a sidechain like Thunder, you connect it to a Bitcoin full node. In the current LayerTwo Labs software that means running Bitcoin Core with the Enforcer alongside it (BitWindow is the friendly frontend). The sidechain talks to Bitcoin through that node.',
+      actionHint: 'Connect the sidechain to the Bitcoin node.',
+      why: 'A sidechain does not float in space. Bitcoin Core stays its reference point for what is real — the Enforcer just teaches that node the BIP300/301 rules without changing Bitcoin itself.',
     },
     {
       id: 'quiz',
@@ -479,7 +479,14 @@ export const lessonData: LessonData = {
       id: 'drivenet',
       term: 'DriveNet',
       short:
-        'LayerTwo Labs software that acts as the Bitcoin full node a sidechain connects to in this testing setup.',
+        'An older LayerTwo Labs test node (a forked Bitcoin Core). Now deprecated in favor of the Enforcer running alongside unmodified Bitcoin Core.',
+    },
+    {
+      id: 'enforcer',
+      term: 'Enforcer',
+      short:
+        'LayerTwo Labs software (bip300301_enforcer) that runs next to a normal Bitcoin Core node and teaches it the proposed BIP300/301 rules — without forking Bitcoin.',
+      example: 'BitWindow is the graphical frontend you actually click.',
     },
     {
       id: 'slot',

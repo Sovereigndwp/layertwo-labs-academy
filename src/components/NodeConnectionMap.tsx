@@ -19,8 +19,8 @@ export function NodeConnectionMap({ step }: { step: LessonStep }) {
           <div className="node__icon" aria-hidden="true">
             ₿
           </div>
-          <div className="node__name">DriveNet</div>
-          <div className="node__sub">Bitcoin full node</div>
+          <div className="node__name">Bitcoin Core + Enforcer</div>
+          <div className="node__sub">full node · BitWindow frontend</div>
         </div>
 
         <button
@@ -62,16 +62,16 @@ export function NodeConnectionMap({ step }: { step: LessonStep }) {
           {connected ? (
             <>
               <b>Connected.</b>
-              {state.sidechainName} now talks to Bitcoin through the{' '}
-              <Term id="full-node">full node</Term>, the same way a Lightning
-              node needs a Bitcoin node. Bitcoin stays its reference point for
-              what is real.
+              {state.sidechainName} now talks to Bitcoin through a{' '}
+              <Term id="full-node">full node</Term> running the Enforcer — the
+              same way a Lightning node needs a Bitcoin node. Bitcoin Core stays
+              the reference point; the Enforcer only adds BIP300/301 awareness.
             </>
           ) : (
             <>
               <b>Not connected yet.</b>
               Press the button between the two nodes to link {state.sidechainName}{' '}
-              to <Term id="drivenet" />.
+              to the Bitcoin node.
             </>
           )}
         </p>
