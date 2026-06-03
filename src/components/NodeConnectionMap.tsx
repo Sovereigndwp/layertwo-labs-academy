@@ -5,8 +5,9 @@ import { Term } from './Term'
 
 /**
  * Module 6 — Connect to Bitcoin.
- * Click-to-connect (keyboard friendly; no drag required) DriveNet ↔ Testchain.
- * Teaching beat: a sidechain still needs a Bitcoin full node as its anchor.
+ * Click-to-connect (keyboard friendly; no drag required): sidechain ↔ Bitcoin
+ * Core + Enforcer. Teaching beat: a sidechain still needs a Bitcoin full node
+ * as its anchor (the Enforcer adds BIP300/301 awareness without forking Bitcoin).
  */
 export function NodeConnectionMap({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
@@ -31,7 +32,7 @@ export function NodeConnectionMap({ step }: { step: LessonStep }) {
           aria-label={
             connected
               ? 'Connected. Press to disconnect.'
-              : 'Connect Testchain to the DriveNet full node'
+              : 'Connect the sidechain to the Bitcoin node'
           }
           onClick={() =>
             dispatch({ type: 'SET_NODE_CONNECTED', connected: !connected })

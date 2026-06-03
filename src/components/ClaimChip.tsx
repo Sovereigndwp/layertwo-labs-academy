@@ -31,7 +31,14 @@ export function ClaimChip({ claim }: { claim: VerifiableClaim }) {
       </Tooltip>{' '}
       {claim.text}{' '}
       {claim.sources.map((s, i) => (
-        <a key={i} className="claimchip__src" href={s.url} target="_blank" rel="noreferrer">
+        <a
+          key={i}
+          className="claimchip__src"
+          href={s.url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`source ${i + 1}: ${s.label}`}
+        >
           [{i + 1}]
         </a>
       ))}
