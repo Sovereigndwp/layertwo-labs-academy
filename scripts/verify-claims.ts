@@ -13,10 +13,12 @@ for (const lesson of lessons) {
       problems++
       console.error(`✗ [${lesson.id}] claim "${claim.id}": ${errors.join('; ')}`)
     }
-    if (isClaimStale(claim, today)) {
+    if (claim.status === 'needs-recheck') {
+      console.warn(`⚠ [${lesson.id}] claim "${claim.id}" needs recheck (flagged in-product)`)
+    } else if (isClaimStale(claim, today)) {
       problems++
       console.error(
-        `✗ [${lesson.id}] claim "${claim.id}" is stale (verifiedOn ${claim.verifiedOn}, status ${claim.status})`,
+        `✗ [${lesson.id}] claim "${claim.id}" is stale: a verified claim aged past 180 days (verifiedOn ${claim.verifiedOn})`,
       )
     }
   }

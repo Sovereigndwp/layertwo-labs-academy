@@ -120,7 +120,82 @@ export const lessonData: LessonData = {
   tags: ['drivechain', 'bip300', 'bip301', 'sidechains', 'layer2'],
   estMinutes: 12,
   prerequisites: [],
-  claims: [],
+  claims: [
+    {
+      id: 'proposed-soft-fork',
+      text: 'Drivechain is a proposed Bitcoin soft fork (BIP300 + BIP301) and is not live on Bitcoin mainnet.',
+      tier: 'PROJ',
+      sources: [
+        { label: 'LayerTwo Labs — FAQ', url: 'https://layertwolabs.com' },
+        { label: 'Peter Todd — Drivechains analysis', url: 'https://petertodd.org/2023/drivechains' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'bip300-301-roles',
+      text: 'BIP300 specifies hashrate escrow (how sidechain withdrawals are approved by miners); BIP301 specifies blind merged mining (how miners earn sidechain fees without running sidechain software).',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer (LayerTwo-Labs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+        { label: 'Drivechain.info', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: '256-slots',
+      text: 'A Drivechain mainchain reserves 256 sidechain slots; each slot can be assigned to one sidechain.',
+      tier: 'DEV',
+      sources: [
+        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'needs-recheck',
+    },
+    {
+      id: 'one-ack-per-block',
+      text: 'Miners can include at most one ACK per block for a sidechain proposal.',
+      tier: 'DEV',
+      sources: [
+        { label: 'BIP300 (hashrate escrow)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'activation-threshold',
+      text: 'The intended activation threshold is roughly 95% of the past 2016 blocks (1916/2016); testing networks have used a lower threshold.',
+      tier: 'DEV',
+      sources: [
+        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'needs-recheck',
+    },
+    {
+      id: 'enforcer-stack',
+      text: 'The current LayerTwo Labs software runs the bip300301_enforcer alongside an unmodified Bitcoin Core node (via RPC/ZMQ), with BitWindow as the frontend; the older forked DriveNet/mainchain node is deprecated.',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+        { label: 'BitWindow / drivechain-frontends', url: 'https://github.com/LayerTwo-Labs/drivechain-frontends' },
+        { label: 'Downloads', url: 'https://releases.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'real-sidechains',
+      text: 'Example sidechains built by LayerTwo Labs include Thunder (large blocksize + fraud proofs), BitNames, BitAssets, and Truthcoin.',
+      tier: 'DEV',
+      sources: [
+        { label: 'LayerTwo-Labs on GitHub', url: 'https://github.com/LayerTwo-Labs' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+  ],
   slug: 'create-a-sidechain-without-breaking-bitcoin',
   title: 'Create a Sidechain Without Breaking Bitcoin',
   promise:
