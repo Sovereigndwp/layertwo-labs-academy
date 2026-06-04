@@ -17,10 +17,11 @@ export function SlotGrid({ step }: { step: LessonStep }) {
   const selected = state.selectedSlot
 
   const [probe, setProbe] = useState<string>('')
+  const [hijackTried, setHijackTried] = useState(false)
   const probeNum = Number(probe)
   const probeFeedback =
     probe === '' ? 'Enter a slot number to test the limit.'
-    : !Number.isInteger(probeNum) || probeNum < 1 ? 'Slots are numbered from 1.'
+    : !Number.isInteger(probeNum) || probeNum < 1 ? 'We show slots as 1–256; the sidechain number is really one byte (0–255). Either way there are exactly 256 — the count is what the encoding forces.'
     : probeNum <= 256 ? `✓ Slot ${probeNum} is valid — one of the 256.`
     : `✗ There is no slot ${probeNum}. The sidechain number is a single byte — 256 values in total. 256 is a hard ceiling set by the encoding, not a rule anyone can raise.`
 
@@ -134,12 +135,39 @@ export function SlotGrid({ step }: { step: LessonStep }) {
         </p>
       </div>
 
+      <div className="slot-probe card">
+          <strong>Probe the lock — try to take a slot that is already proposed:</strong>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setHijackTried(true)}
+            style={{ marginTop: 'var(--sp-2)' }}
+          >
+            Try to re-propose slot 1 with your own software
+          </button>
+          {hijackTried && (
+            <p aria-live="polite" className="slot-probe__feedback">
+              ✗ Ignored. The <Term id="enforcer">Enforcer</Term> silently drops a
+              re-proposal of an already-taken (slot, description), so slot 1's ACK
+              votes cannot be reset or hijacked — the original proposal stands.
+              That is what keeps each slot's identity stable.
+            </p>
+          )}
+        </div>
+
       <div className="slot-how">
         <strong>How we know two sidechains can't fight over a slot:</strong> the{' '}
-        <Term id="enforcer">Enforcer</Term> rejects a re-proposal of an
+        <Term id="enforcer">Enforcer</Term> ignores a re-proposal of an
         already-taken (slot, description), so miners cannot reset or hijack it.
         Falsifier — if you could re-propose slot 1 with different software and
-        wipe its votes, slots would not be stable; the code refuses it.
+        wipe its votes, slots would not be stable; the code refuses it.{' '}
+        <a
+          href="https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/validator/task/mod.rs"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source: bip300301_enforcer
+        </a>
       </div>
 
       <aside className="slot-helper" aria-label="Analogy helper">
