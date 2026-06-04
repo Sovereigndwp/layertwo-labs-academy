@@ -16,6 +16,9 @@ export type ActivationStatus =
   | 'activating'
   | 'active'
 
+/** Run-length encoded entry for the rolling ACK window. */
+export interface AckRun { acked: boolean; n: number }
+
 /** A learner's answer to one reflection/quiz question. */
 export interface QuizAnswer {
   questionId: string
@@ -47,6 +50,8 @@ export interface LessonState {
   ackCount: number
   /** ACKs required to activate. 1916 of 2016 ≈ 95%. */
   ackThreshold: number
+  /** Run-length encoding of the trailing ≤2016 blocks; front = oldest. */
+  ackWindow: AckRun[]
 
   // --- Module 5: Activation ---
   activationStatus: ActivationStatus
@@ -78,6 +83,7 @@ export const initialLessonState: LessonState = {
   selectedRelease: null,
   ackCount: 0,
   ackThreshold: 1916, // ≈ 95% of 2016 blocks (the *future* target)
+  ackWindow: [],
   activationStatus: 'not proposed',
   nodeConnected: false,
   quizAnswers: [],
@@ -94,9 +100,9 @@ export type LessonAction =
   | { type: 'SET_SIDECHAIN_NAME'; name: string }
   | { type: 'SET_ADDRESS_BYTES'; tag: string; unique: boolean }
   | { type: 'SELECT_RELEASE'; releaseId: string }
-  | { type: 'SET_ACK_COUNT'; count: number }
   | { type: 'MINE_BLOCKS'; amount: number; supporting: boolean }
   | { type: 'SET_ACK_THRESHOLD'; count: number }
+  | { type: 'RESET_ACKS' }
   | { type: 'SET_ACTIVATION'; status: ActivationStatus }
   | { type: 'SET_NODE_CONNECTED'; connected: boolean }
   | { type: 'ANSWER_QUIZ'; questionId: string; choiceId: string }

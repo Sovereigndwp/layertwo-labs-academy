@@ -123,22 +123,21 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             onClick={() =>
               dispatch({ type: 'MINE_BLOCKS', amount: 100, supporting: false })
             }
-            disabled={ackCount <= 0}
           >
             ⛏ Mine 100 — miners stop ACKing
           </button>
           <button
             type="button"
             className="btn"
-            onClick={() => dispatch({ type: 'SET_ACK_COUNT', count: 0 })}
+            onClick={() => dispatch({ type: 'RESET_ACKS' })}
           >
             ↺ Reset
           </button>
         </div>
         <p className="ack__strip-note">
-          ACKs are counted over the trailing 2016 blocks. Push support up, then
-          mine without ACKing — watch it fall. Activation needs sustained
-          support, not one spike.
+          ACKs are counted over the trailing 2016 blocks. Mine with support to
+          raise it; mine without ACKing and the oldest ACKs roll out of the
+          window and the count falls. Support must be sustained.
         </p>
 
         {/* ── (b) Threshold probe ── */}
@@ -166,7 +165,16 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             aria-label={`Activation threshold, ${ackThreshold} of 2016 blocks`}
           />
           <div className="ack__callout">
-            {thresholdPct < 60 ? (
+            {thresholdPct <= 55 ? (
+              <>
+                <span aria-hidden="true">⚠</span>{' '}
+                <span>
+                  <strong>Low bar:</strong> at this threshold, a bare-majority
+                  cartel starting at 51% could force a sidechain the rest of the
+                  network rejects. This is why the bar sits near 95%.
+                </span>
+              </>
+            ) : thresholdPct < 60 ? (
               <>
                 <span aria-hidden="true">⚠</span>{' '}
                 <span>
@@ -194,12 +202,27 @@ export function AckTimeline({ step }: { step: LessonStep }) {
           </div>
         </div>
 
+        {/* ── (b2) Observed-consequence callout: low-threshold activation ── */}
+        {met && thresholdPct < 60 && (
+          <div className="ack__callout" role="alert">
+            <span aria-hidden="true">⚠</span>{' '}
+            <span>
+              You just activated a sidechain with only{' '}
+              {thresholdPct.toFixed(0)}% support — a bare-majority cartel
+              (≥51%) could force a sidechain the rest of the network rejects.
+              This is why the bar sits near 95%.
+            </span>
+          </div>
+        )}
+
         {/* ── (c) How we know / falsifier ── */}
         <div className="ack__how">
           <strong>How we know:</strong> every{' '}
           <Term id="full-node">full node</Term> checks this against the public
-          block history (BIP300). Falsifier — a sidechain that activated without
-          sustained ~95% ACKs would be rejected by nodes.
+          block history (BIP300 specifies the mechanism; the exact threshold is
+          implementation-defined — the intended target is about 95%). Falsifier
+          — a sidechain that activated without sustained support above the
+          activation threshold would be rejected by nodes.
         </div>
 
         {/* ── (d) Analogy helper (subordinate) ── */}

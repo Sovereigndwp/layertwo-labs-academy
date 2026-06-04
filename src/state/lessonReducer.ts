@@ -12,10 +12,6 @@ function clampStep(step: number): number {
   return Math.max(0, Math.min(LAST_STEP, step))
 }
 
-function clampAck(count: number): number {
-  return Math.max(0, Math.min(TOTAL_BLOCKS, count))
-}
-
 /**
  * Pure reducer for the whole lesson. Side effects (localStorage) live in the
  * provider, never here — this stays testable in isolation.
@@ -50,16 +46,32 @@ export function lessonReducer(
     case 'SELECT_RELEASE':
       return { ...state, selectedRelease: action.releaseId }
 
-    case 'SET_ACK_COUNT':
-      return { ...state, ackCount: clampAck(action.count) }
-
-    case 'MINE_BLOCKS':
-      return {
-        ...state,
-        ackCount: action.supporting
-          ? clampAck(state.ackCount + action.amount)
-          : clampAck(state.ackCount - action.amount),
+    case 'MINE_BLOCKS': {
+      const win = state.ackWindow.map((r) => ({ ...r }))
+      const last = win[win.length - 1]
+      if (last && last.acked === action.supporting) {
+        last.n += action.amount
+      } else {
+        win.push({ acked: action.supporting, n: action.amount })
       }
+      // Evict oldest blocks so the window holds at most TOTAL_BLOCKS.
+      let total = win.reduce((s, r) => s + r.n, 0)
+      while (total > TOTAL_BLOCKS && win.length > 0) {
+        const over = total - TOTAL_BLOCKS
+        if (win[0].n <= over) {
+          total -= win[0].n
+          win.shift()
+        } else {
+          win[0].n -= over
+          total -= over
+        }
+      }
+      const ackCount = win.reduce((s, r) => s + (r.acked ? r.n : 0), 0)
+      return { ...state, ackWindow: win, ackCount }
+    }
+
+    case 'RESET_ACKS':
+      return { ...state, ackWindow: [], ackCount: 0 }
 
     case 'SET_ACK_THRESHOLD':
       return {
