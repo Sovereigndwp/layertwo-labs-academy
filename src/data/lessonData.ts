@@ -2,6 +2,7 @@
 // lessonData — ALL learner-facing copy for this lesson lives here.
 // ---------------------------------------------------------------------------
 import type { VerifiableClaim } from '../state/claims'
+import type { LessonAnalogy } from '../state/analogy'
 // Components are dumb renderers driven by this file. To build a *new* LayerTwo
 // Labs lesson, copy this file, swap the content, and reuse the same engine and
 // components. Keep the factual guardrails (see `factBadge`) intact: Drivechain
@@ -94,6 +95,7 @@ export interface LessonData {
   estMinutes: number
   prerequisites: string[]
   claims: VerifiableClaim[]
+  analogy: LessonAnalogy
   slug: string
   title: string
   promise: string
@@ -196,6 +198,18 @@ export const lessonData: LessonData = {
       status: 'verified',
     },
   ],
+  analogy: {
+    world: 'roads',
+    blurb: 'Bitcoin is the main road; a sidechain is a side road that joins it at a numbered exit.',
+    mappings: [
+      { term: 'Bitcoin', element: 'the main road / highway everyone shares' },
+      { term: 'sidechain', element: 'a separate side road built next to the main road' },
+      { term: 'slot', element: 'a reserved, numbered highway exit where a side road can connect' },
+      { term: 'deposit / withdrawal', element: 'traffic moving on and off the highway via that exit' },
+      { term: 'miner ACKs', element: 'the highway authority repeatedly voting to open the exit' },
+      { term: 'activation', element: 'the exit officially opening to traffic' },
+    ],
+  },
   slug: 'create-a-sidechain-without-breaking-bitcoin',
   title: 'Create a Sidechain Without Breaking Bitcoin',
   promise:
