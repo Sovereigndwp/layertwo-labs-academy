@@ -368,6 +368,70 @@ body {
   display: inline-block;
 }
 
+/* ---------------- Slot probe (limit explorer) -------------------------- */
+.slot-probe {
+  margin-top: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+}
+.slot-probe label {
+  font-weight: 700;
+  color: var(--text);
+}
+.slot-probe input[type='number'] {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.slot-probe input[type='number']:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.slot-probe__feedback {
+  margin: 0;
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ---------------- Slot how-we-know (collision falsifier) --------------- */
+.slot-how {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--info, var(--border-strong));
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.slot-how strong {
+  color: var(--text);
+}
+
+/* ---------------- Slot analogy helper (secondary, labeled) ------------- */
+.slot-helper {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-faint);
+  font-style: italic;
+  line-height: 1.5;
+}
+.slot-helper strong {
+  color: var(--text-muted);
+  font-style: normal;
+}
+
 /* ---------------- Selectable option cards (identity, release) ---------- */
 .option {
   text-align: left;

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { LessonStep } from '../data/lessonData'
 import { TOTAL_SLOTS } from '../state/types'
 import { useLesson } from '../state/LessonProvider'
@@ -14,6 +15,14 @@ const TARGET_SLOT = 1
 export function SlotGrid({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
   const selected = state.selectedSlot
+
+  const [probe, setProbe] = useState<string>('')
+  const probeNum = Number(probe)
+  const probeFeedback =
+    probe === '' ? 'Enter a slot number to test the limit.'
+    : !Number.isInteger(probeNum) || probeNum < 1 ? 'Slots are numbered from 1.'
+    : probeNum <= 256 ? `✓ Slot ${probeNum} is valid — one of the 256.`
+    : `✗ There is no slot ${probeNum}. The sidechain number is a single byte — 256 values in total. 256 is a hard ceiling set by the encoding, not a rule anyone can raise.`
 
   return (
     <StepFrame step={step} canAdvance={selected !== null}>
@@ -107,6 +116,37 @@ export function SlotGrid({ step }: { step: LessonStep }) {
           }}
         />
       </label>
+
+      <div className="slot-probe card">
+        <label htmlFor="slot-probe-input">
+          Probe the limit — propose a slot number:
+        </label>
+        <input
+          id="slot-probe-input"
+          type="number"
+          min={1}
+          value={probe}
+          onChange={(e) => setProbe(e.target.value)}
+          placeholder="try 256, then 257"
+        />
+        <p aria-live="polite" className="slot-probe__feedback">
+          {probeFeedback}
+        </p>
+      </div>
+
+      <div className="slot-how">
+        <strong>How we know two sidechains can't fight over a slot:</strong> the{' '}
+        <Term id="enforcer">Enforcer</Term> rejects a re-proposal of an
+        already-taken (slot, description), so miners cannot reset or hijack it.
+        Falsifier — if you could re-propose slot 1 with different software and
+        wipe its votes, slots would not be stable; the code refuses it.
+      </div>
+
+      <aside className="slot-helper" aria-label="Analogy helper">
+        <strong>Picture it:</strong> a slot is a numbered exit on the Bitcoin
+        highway — claiming it reserves that exit number, but the side road still
+        has to be built.
+      </aside>
     </StepFrame>
   )
 }

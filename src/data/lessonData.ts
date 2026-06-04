@@ -271,9 +271,11 @@ export const lessonData: LessonData = {
       navLabel: 'Choose a slot',
       headline: 'Pick an empty slot for your sidechain.',
       explain:
-        'The Bitcoin mainchain has 256 numbered slots — think of them as exits on a highway. Most are just an exit sign with no road built behind them yet. We will claim slot 1 for a sidechain called Testchain.',
-      actionHint: 'Click slot 1 to claim it.',
-      why: 'Claiming the exit does not build the road. The slot only reserves the spot — someone still has to build and run the real sidechain software.',
+        "A slot is just a number, and the range is not arbitrary. A sidechain's number is stored in a single byte, so there are exactly 256 possible slots — no more. Reserving slot 1 claims one of those 256 numbers; it does not build or run anything. The number is public, so everyone agrees which sidechain is which without a middleman.",
+      actionHint:
+        'Reserve slot 1 and name it — then probe the limit below: try to propose a slot past the last one.',
+      why:
+        'Because the slot is a public number capped by one byte, the set of sidechains stays small (256) and everyone can independently agree which is which — no coordinator and no registrar to capture.',
     },
     {
       id: 'identity',
