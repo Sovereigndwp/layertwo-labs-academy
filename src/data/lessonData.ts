@@ -291,11 +291,11 @@ export const lessonData: LessonData = {
       id: 'activation',
       kind: 'activation',
       navLabel: 'Activate',
-      headline: 'Enough signals, and the slot flips to active.',
+      headline: 'Enough signals, and the slot flips to active — automatically.',
       explain:
-        'Once the ACK threshold is reached, the slot changes from "proposed" to "active." Something changed — and something important did not.',
-      actionHint: 'Activate the slot, then read what changed.',
-      why: 'Activation means the network recognizes the slot. It does not magically run the software for you — that part is still up to people.',
+        "Nobody presses an 'activate' button. The instant sustained support crosses the threshold, every Bitcoin node's rules recognize the slot as active on their own — automatically. That is the whole point of making activation a rule, not a decision: no person or company can flip it on or off.",
+      actionHint: 'See what the network did automatically.',
+      why: 'Because activation is an automatic consequence of the public ACK record, there is no authority to capture or bribe — the rule decides, and everyone can check it.',
     },
     {
       id: 'connect',

@@ -33,3 +33,23 @@ describe('ACK rolling window', () => {
     expect(s.ackWindow).toEqual([])
   })
 })
+
+describe('automatic activation', () => {
+  it('activates automatically when ACKs reach the threshold', () => {
+    const s = lessonReducer(initialLessonState, { type: 'MINE_BLOCKS', amount: 1916, supporting: true })
+    expect(s.ackCount).toBe(1916)
+    expect(s.activationStatus).toBe('active')
+  })
+  it('stays active even if support later decays below the threshold', () => {
+    let s = lessonReducer(initialLessonState, { type: 'MINE_BLOCKS', amount: 1916, supporting: true })
+    s = lessonReducer(s, { type: 'MINE_BLOCKS', amount: 500, supporting: false })
+    expect(s.ackCount).toBeLessThan(1916)
+    expect(s.activationStatus).toBe('active')
+  })
+  it('lowering the threshold below current support auto-activates', () => {
+    let s = lessonReducer(initialLessonState, { type: 'MINE_BLOCKS', amount: 1100, supporting: true })
+    expect(s.activationStatus).not.toBe('active')
+    s = lessonReducer(s, { type: 'SET_ACK_THRESHOLD', count: 1008 }) // 50%
+    expect(s.activationStatus).toBe('active')
+  })
+})

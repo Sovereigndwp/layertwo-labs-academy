@@ -24,7 +24,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
   const filledSquares = Math.round((ackCount / TOTAL_BLOCKS) * STRIP_SQUARES)
 
   return (
-    <StepFrame step={step} canAdvance={met} nextLabel="Activate the slot">
+    <StepFrame step={step} canAdvance={met} nextLabel="See what activated">
       <div className="ack">
         {/* ── Meter ── */}
         <div className="ack__meter">

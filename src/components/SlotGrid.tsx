@@ -63,7 +63,7 @@ export function SlotGrid({ step }: { step: LessonStep }) {
               }
               onClick={() => dispatch({ type: 'SELECT_SLOT', slot: num })}
             >
-              {num <= 9 || isSelected ? num : ''}
+              {num}
             </button>
           )
         })}

@@ -13,6 +13,19 @@ function clampStep(step: number): number {
 }
 
 /**
+ * In BIP300, activation is automatic: the instant sustained ACK support
+ * crosses the threshold, every node's rules recognize the slot as active on
+ * their own. Activation is also permanent — once flipped, it does not revert
+ * if support later decays.
+ */
+function withAutoActivation(state: LessonState): LessonState {
+  if (state.activationStatus !== 'active' && state.ackCount >= state.ackThreshold) {
+    return { ...state, activationStatus: 'active' }
+  }
+  return state
+}
+
+/**
  * Pure reducer for the whole lesson. Side effects (localStorage) live in the
  * provider, never here — this stays testable in isolation.
  */
@@ -67,17 +80,16 @@ export function lessonReducer(
         }
       }
       const ackCount = win.reduce((s, r) => s + (r.acked ? r.n : 0), 0)
-      return { ...state, ackWindow: win, ackCount }
+      return withAutoActivation({ ...state, ackWindow: win, ackCount })
     }
 
     case 'RESET_ACKS':
       return { ...state, ackWindow: [], ackCount: 0 }
 
-    case 'SET_ACK_THRESHOLD':
-      return {
-        ...state,
-        ackThreshold: Math.max(1008, Math.min(2016, action.count)),
-      }
+    case 'SET_ACK_THRESHOLD': {
+      const clamped = Math.max(1008, Math.min(2016, action.count))
+      return withAutoActivation({ ...state, ackThreshold: clamped })
+    }
 
     case 'SET_ACTIVATION':
       return { ...state, activationStatus: action.status }
