@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // lessonData — ALL learner-facing copy for this lesson lives here.
 // ---------------------------------------------------------------------------
+import type { VerifiableClaim } from '../state/claims'
 // Components are dumb renderers driven by this file. To build a *new* LayerTwo
 // Labs lesson, copy this file, swap the content, and reuse the same engine and
 // components. Keep the factual guardrails (see `factBadge`) intact: Drivechain
@@ -86,6 +87,13 @@ export interface SourceNote {
 }
 
 export interface LessonData {
+  id: string
+  summary: string
+  audience: 'beginner' | 'intermediate' | 'advanced'
+  tags: string[]
+  estMinutes: number
+  prerequisites: string[]
+  claims: VerifiableClaim[]
   slug: string
   title: string
   promise: string
@@ -105,6 +113,89 @@ export interface LessonData {
 }
 
 export const lessonData: LessonData = {
+  id: 'create-a-sidechain',
+  summary:
+    'How a new Drivechain sidechain gets proposed, recognized by miners, activated, and connected back to Bitcoin.',
+  audience: 'beginner',
+  tags: ['drivechain', 'bip300', 'bip301', 'sidechains', 'layer2'],
+  estMinutes: 12,
+  prerequisites: [],
+  claims: [
+    {
+      id: 'proposed-soft-fork',
+      text: 'Drivechain is a proposed Bitcoin soft fork (BIP300 + BIP301) and is not live on Bitcoin mainnet.',
+      tier: 'PROJ',
+      sources: [
+        { label: 'LayerTwo Labs — FAQ', url: 'https://layertwolabs.com' },
+        { label: 'Peter Todd — Drivechains analysis', url: 'https://petertodd.org/2023/drivechains' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'bip300-301-roles',
+      text: 'BIP300 specifies hashrate escrow (how sidechain withdrawals are approved by miners); BIP301 specifies blind merged mining (how miners earn sidechain fees without running sidechain software).',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer (LayerTwo-Labs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+        { label: 'Drivechain.info', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: '256-slots',
+      text: 'A Drivechain mainchain reserves 256 sidechain slots; each slot can be assigned to one sidechain.',
+      tier: 'DEV',
+      sources: [
+        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'needs-recheck',
+    },
+    {
+      id: 'one-ack-per-block',
+      text: 'Miners can include at most one ACK per block for a sidechain proposal.',
+      tier: 'DEV',
+      sources: [
+        { label: 'BIP300 (hashrate escrow)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'activation-threshold',
+      text: 'The intended activation threshold is roughly 95% of the past 2016 blocks (1916/2016); testing networks have used a lower threshold.',
+      tier: 'DEV',
+      sources: [
+        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'needs-recheck',
+    },
+    {
+      id: 'enforcer-stack',
+      text: 'The current LayerTwo Labs software runs the bip300301_enforcer alongside an unmodified Bitcoin Core node (via RPC/ZMQ), with BitWindow as the frontend; the older forked DriveNet/mainchain node is deprecated.',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer' },
+        { label: 'BitWindow / drivechain-frontends', url: 'https://github.com/LayerTwo-Labs/drivechain-frontends' },
+        { label: 'Downloads', url: 'https://releases.drivechain.info' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+    {
+      id: 'real-sidechains',
+      text: 'Example sidechains built by LayerTwo Labs include Thunder (large blocksize + fraud proofs), BitNames, BitAssets, and Truthcoin.',
+      tier: 'DEV',
+      sources: [
+        { label: 'LayerTwo-Labs on GitHub', url: 'https://github.com/LayerTwo-Labs' },
+      ],
+      verifiedOn: '2026-06-03',
+      status: 'verified',
+    },
+  ],
   slug: 'create-a-sidechain-without-breaking-bitcoin',
   title: 'Create a Sidechain Without Breaking Bitcoin',
   promise:
@@ -197,9 +288,9 @@ export const lessonData: LessonData = {
       navLabel: 'Connect to Bitcoin',
       headline: 'The sidechain still needs a Bitcoin full node.',
       explain:
-        'To actually run Testchain, you point it at a Bitcoin full node — here, DriveNet. This is similar to how a Lightning node needs a Bitcoin node to talk to.',
-      actionHint: 'Connect Testchain to DriveNet.',
-      why: 'A sidechain does not float in space. Bitcoin stays its reference point for what is real.',
+        'To actually run a sidechain like Thunder, you connect it to a Bitcoin full node. In the current LayerTwo Labs software that means running Bitcoin Core with the Enforcer alongside it (BitWindow is the friendly frontend). The sidechain talks to Bitcoin through that node.',
+      actionHint: 'Connect the sidechain to the Bitcoin node.',
+      why: 'A sidechain does not float in space. Bitcoin Core stays its reference point for what is real — the Enforcer just teaches that node the BIP300/301 rules without changing Bitcoin itself.',
     },
     {
       id: 'quiz',
@@ -388,7 +479,14 @@ export const lessonData: LessonData = {
       id: 'drivenet',
       term: 'DriveNet',
       short:
-        'LayerTwo Labs software that acts as the Bitcoin full node a sidechain connects to in this testing setup.',
+        'An older LayerTwo Labs test node (a forked Bitcoin Core). Now deprecated in favor of the Enforcer running alongside unmodified Bitcoin Core.',
+    },
+    {
+      id: 'enforcer',
+      term: 'Enforcer',
+      short:
+        'LayerTwo Labs software (bip300301_enforcer) that runs next to a normal Bitcoin Core node and teaches it the proposed BIP300/301 rules — without forking Bitcoin.',
+      example: 'BitWindow is the graphical frontend you actually click.',
     },
     {
       id: 'slot',

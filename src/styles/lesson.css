@@ -887,3 +887,20 @@ body {
 .sources dd {
   margin: 0 0 var(--sp-2);
 }
+.claimlist { list-style: none; padding: 0; display: grid; gap: var(--sp-2); }
+.claimlist li { font-size: var(--fs-300); color: var(--text-muted); line-height: 1.5; }
+.claimchip__tier {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--orange-ink);
+  background: var(--orange);
+  border-radius: 4px;
+  padding: 1px 6px;
+  cursor: help;
+}
+.claimchip[data-status='disputed'] .claimchip__tier { background: var(--bad); color: #fff; }
+.claimchip[data-stale='true'][data-status='verified'] .claimchip__tier { background: var(--warn); }
+.claimchip__src { color: var(--orange-bright); text-decoration: none; font-size: 0.8rem; }
+.claimchip__src:hover { text-decoration: underline; }

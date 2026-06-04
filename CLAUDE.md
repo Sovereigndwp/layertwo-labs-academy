@@ -91,9 +91,28 @@ These encode the project's editorial and accessibility rules. Preserve them.
   blind merged mining are named only as advanced topics (in
   `AdvancedConceptLockbox`), never explained in depth in this beginner lesson.
 
+## Multi-lesson registry & verifiable claims
+
+- Lessons are registered in `src/data/registry.ts` (`lessons` + `lessonsById`).
+  Add a lesson by importing its `LessonData` and appending it; `LessonHome` and
+  `App` routing pick it up automatically.
+- Progress is namespaced per lesson: `localStorage` key
+  `l2l:lesson:<id>:v<STORAGE_VERSION>` (see `LessonProvider`, which takes a
+  `lessonId` prop).
+- Every factual statement is a `VerifiableClaim` (`src/state/claims.ts`) with a
+  source tier (DEV/DATA/INST/PRESS/PROJ/ANEC), sources, and a `verifiedOn` date.
+  `npm run verify:claims` (wired into `build`) fails on unsourced/aged-out
+  `verified` claims and warns on `needs-recheck`. Render claims with `<ClaimChip>`
+  (used in `SourcesFooter`). Run tests with `npm test` (Vitest).
+- Editorial guardrail still applies: Drivechain is a **proposed** soft fork; the
+  current stack is the **Enforcer + BitWindow + Bitcoin Core** (DriveNet/mainchain
+  deprecated). Numbers you can't confirm against a primary spec ship as
+  `needs-recheck`, not as fact.
+
 ## Adding the next lesson
 
-Copy `lessonData.ts`, swap the content, give it a new `localStorage` key in a
-new provider instance, and reuse the engine and components. Step kinds that
-already have renderers work for free; genuinely new interactions need a new
-component + a `StepKind` case in `LessonShell`'s router.
+Copy `lessonData.ts`, swap the content (new `id`, `claims`, steps), and append
+it to `lessons` in `src/data/registry.ts` — progress namespacing and the lesson
+picker are automatic. Reuse the engine and components: step kinds that already
+have renderers work for free; genuinely new interactions need a new component +
+a `StepKind` case in `LessonShell`'s router.

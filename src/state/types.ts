@@ -7,6 +7,9 @@
 // Labs lesson can reuse this engine with a different lessonData file.
 // ---------------------------------------------------------------------------
 
+/** Bump when the persisted shape changes incompatibly. */
+export const STORAGE_VERSION = 1
+
 export type ActivationStatus =
   | 'not proposed'
   | 'proposed'
@@ -24,7 +27,7 @@ export interface LessonState {
   lessonStep: number
 
   // --- Module 1: Choose a Slot ---
-  /** 1-based slot number the learner reserved, or null. DriveNet has 256 slots. */
+  /** 1-based slot number the learner reserved, or null. A Drivechain mainchain has 256 slots. */
   selectedSlot: number | null
   /** Human name assigned to the slot. Defaults to "Testchain". */
   sidechainName: string
@@ -49,7 +52,7 @@ export interface LessonState {
   activationStatus: ActivationStatus
 
   // --- Module 6: Connect to Bitcoin ---
-  /** Whether Testchain is connected to the DriveNet full node. */
+  /** Whether the sidechain is connected to the Bitcoin node (Bitcoin Core + Enforcer). */
   nodeConnected: boolean
 
   // --- Module 8: Reflection / quiz ---
