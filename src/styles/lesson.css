@@ -98,20 +98,51 @@ body {
 
 /* ---------------- Fact badge (factual guardrail, always visible) -------- */
 .factbadge {
+  position: relative;
+  display: inline-flex;
+}
+.factbadge__trigger {
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
-  background: var(--orange-dim);
-  border: 1px solid var(--orange);
-  color: var(--orange-bright);
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: help;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
 }
-.factbadge__icon {
-  font-weight: 800;
+.factbadge__trigger:hover,
+.factbadge__trigger[aria-expanded='true'] {
+  border-color: var(--orange);
+  color: var(--orange-bright);
+}
+.factbadge__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: min(320px, 82vw);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: var(--sp-4);
+  text-align: left;
+}
+.factbadge__short {
+  margin: 0 0 var(--sp-2);
+  font-weight: 700;
+  color: var(--orange-bright);
+  font-size: var(--fs-300);
+}
+.factbadge__full {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-300);
+  line-height: 1.5;
 }
 
 /* ---------------- Progress rail ---------------- */

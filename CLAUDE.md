@@ -77,8 +77,10 @@ These encode the project's editorial and accessibility rules. Preserve them.
 - **Factual accuracy / no overclaiming.** Drivechain is a *proposed* Bitcoin
   soft fork (BIP300/BIP301); DriveNet and Testchain are LayerTwo Labs *testing*
   software — **never** describe any of this as live on Bitcoin mainnet. The
-  `FactBadge` (driven by `lessonData.factBadge`) and `SourcesFooter` keep this
-  visible on every screen. When editing copy, keep this framing.
+  `FactBadge` (driven by `lessonData.factBadge`) is a quiet **disclosure** present
+  on every screen (a small ⓘ that opens the full disclaimer), and `SourcesFooter`
+  carries the accuracy note. Keep this framing; keep the disclosure reachable on
+  every screen.
 - **Tone:** simple, concrete, respectful. No hype, no "crypto bro" or tribal
   Bitcoin language. Explain tradeoffs honestly.
 - **One idea per screen**, mobile-first, no walls of text.
