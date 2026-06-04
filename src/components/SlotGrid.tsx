@@ -9,7 +9,7 @@ const TARGET_SLOT = 1
 /**
  * Module 1 — Choose a Slot.
  * 256 slots; we guide the learner to reserve slot 1 for Testchain and name it.
- * Teaching beat: a slot is only a parking space, not the sidechain itself.
+ * Teaching beat: a slot is only a reserved highway exit, not the sidechain itself.
  */
 export function SlotGrid({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
@@ -76,8 +76,9 @@ export function SlotGrid({ step }: { step: LessonStep }) {
           </span>
           <p>
             <b>Slot {selected} reserved.</b>
-            You have parked a space for a <Term id="sidechain" />. It is still
-            empty — reserving the slot does not create or run anything yet.
+            You have claimed an exit for a <Term id="sidechain" />. No road is
+            built behind it yet — reserving the slot does not create or run
+            anything yet.
           </p>
         </div>
       )}

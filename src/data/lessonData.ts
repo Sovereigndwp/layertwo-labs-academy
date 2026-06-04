@@ -227,8 +227,8 @@ export const lessonData: LessonData = {
       why: 'These four ideas make every step after this one obvious.',
       body: [
         'A sidechain is a separate chain that uses Bitcoin as its anchor. Coins can move out to it and back.',
-        'A slot is an empty parking space for one sidechain. DriveNet sets aside 256 of them.',
-        'There are 256 slots so the number of sidechains stays small and reviewable — not unlimited noise.',
+        'A slot is a numbered exit on the Bitcoin highway — a reserved spot where a side road could connect. There are 256 of them.',
+        'There are 256 so the number of sidechains stays small and reviewable — not unlimited noise.',
         'Most people will never make one. But anyone deserves to understand how it would happen.',
       ],
     },
@@ -238,9 +238,9 @@ export const lessonData: LessonData = {
       navLabel: 'Choose a slot',
       headline: 'Pick an empty slot for your sidechain.',
       explain:
-        'DriveNet has 256 numbered slots, most of them blank. We will reserve slot 1 for a sidechain called Testchain. The slot is just a labeled parking space.',
-      actionHint: 'Click slot 1 to reserve it.',
-      why: 'A slot does not create a sidechain by itself. It only reserves a place where real sidechain software can be recognized.',
+        'The Bitcoin mainchain has 256 numbered slots — think of them as exits on a highway. Most are just an exit sign with no road built behind them yet. We will claim slot 1 for a sidechain called Testchain.',
+      actionHint: 'Click slot 1 to claim it.',
+      why: 'Claiming the exit does not build the road. The slot only reserves the spot — someone still has to build and run the real sidechain software.',
     },
     {
       id: 'identity',
@@ -492,7 +492,7 @@ export const lessonData: LessonData = {
       id: 'slot',
       term: 'Slot',
       short:
-        'One of 256 numbered spaces in DriveNet. A reserved place for a single sidechain — not the sidechain itself.',
+        'One of 256 numbered exits on the Bitcoin mainchain. A reserved spot where one sidechain can connect — not the sidechain itself.',
       example: 'We reserved slot 1 for Testchain.',
     },
     {
