@@ -8,7 +8,8 @@
 // ---------------------------------------------------------------------------
 
 /** Bump when the persisted shape changes incompatibly. */
-export const STORAGE_VERSION = 1
+// v2: corrected ackThreshold default to 1815 (~90%) + added ackWindow; discard stale v1 saves.
+export const STORAGE_VERSION = 2
 
 export type ActivationStatus =
   | 'not proposed'
