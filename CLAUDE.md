@@ -90,6 +90,25 @@ These encode the project's editorial and accessibility rules. Preserve them.
 - **Don't teach the advanced layer here.** BIP300/301, hashrate escrow, and
   blind merged mining are named only as advanced topics (in
   `AdvancedConceptLockbox`), never explained in depth in this beginner lesson.
+- **First principles lead; analogies are helpers.** Every teaching screen opens
+  with the actual mechanism and the constraint that forces it. The analogy is an
+  optional, labeled, skippable helper — never the explanation. See
+  `docs/authoring/epistemic-depth.md`.
+- **Interactives must be deep, not toys.** Each must let the learner do WHAT
+  (the real procedure), HOW (the mechanism responds), WHY (probe a variable until
+  it breaks, revealing the rationale), and HOW-WE-KNOW (tie to spec + a
+  falsifier). An interactive that only does WHAT is shallow → redesign.
+- **Analogy consistency.** Each lesson declares an `analogy` (world +
+  term→element map; `src/state/analogy.ts`). Reuse the course "roads" world
+  unless deliberately starting a new one. `npm run verify:analogy` (in `build`)
+  bans cross-world words; an analogy-audit subagent reviews every lesson. See
+  `docs/authoring/analogy-audit.md`.
+
+## Process gates (run on every new/repurposed lesson)
+
+Alongside the spec + code-quality reviews: **analogy audit** and
+**epistemic-depth audit** subagents (prompts in `docs/authoring/`). The CI gates
+`npm run verify:claims` and `npm run verify:analogy` run inside `npm run build`.
 
 ## Multi-lesson registry & verifiable claims
 

@@ -6,8 +6,9 @@
   "description": "Interactive, first-principles Bitcoin Layer 2 / Drivechain lessons for complete beginners.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && npm run verify:claims && vite build",
+    "build": "tsc --noEmit && npm run verify:claims && npm run verify:analogy && vite build",
     "verify:claims": "tsx scripts/verify-claims.ts",
+    "verify:analogy": "tsx scripts/verify-analogy.ts",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
