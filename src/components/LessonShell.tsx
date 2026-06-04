@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { lessonData, type LessonStep } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { ProgressRail } from './ProgressRail'
@@ -45,6 +46,15 @@ function StepRouter({ step }: { step: LessonStep }) {
 export function LessonShell() {
   const { state, dispatch } = useLesson()
   const step = lessonData.steps[state.lessonStep]
+  const mainRef = useRef<HTMLElement>(null)
+
+  // On every step change, jump back to the top (and move focus there for
+  // keyboard/screen-reader users) — otherwise the new step opens at the
+  // scroll position of the Next button, i.e. the bottom of the page.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 })
+    mainRef.current?.focus({ preventScroll: true })
+  }, [state.lessonStep])
 
   return (
     <div className="shell">
@@ -74,7 +84,7 @@ export function LessonShell() {
         </div>
       </header>
 
-      <main className="shell__main" id="lesson-main">
+      <main className="shell__main" id="lesson-main" ref={mainRef} tabIndex={-1}>
         <ProgressRail />
         <StepRouter step={step} />
         <SourcesFooter />
