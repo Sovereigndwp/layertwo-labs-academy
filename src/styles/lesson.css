@@ -951,6 +951,41 @@ body {
 .sources dd {
   margin: 0 0 var(--sp-2);
 }
+.sources__summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: var(--sp-2) 0;
+}
+.sources__summary::-webkit-details-marker {
+  display: none;
+}
+.sources__summary::before {
+  content: '▸';
+  display: inline-block;
+  color: var(--text-faint);
+  transition: transform 0.15s ease;
+}
+.sources__disclosure[open] .sources__summary::before {
+  transform: rotate(90deg);
+}
+.sources__count {
+  font-weight: 400;
+  color: var(--text-faint);
+}
+.sources__body {
+  padding-top: var(--sp-3);
+}
+.sources__h {
+  margin: 0 0 var(--sp-2);
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: var(--fs-300);
+}
 .claimlist { list-style: none; padding: 0; display: grid; gap: var(--sp-2); }
 .claimlist li { font-size: var(--fs-300); color: var(--text-muted); line-height: 1.5; }
 .claimchip__tier {
