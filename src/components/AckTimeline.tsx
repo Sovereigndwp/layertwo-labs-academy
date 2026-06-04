@@ -11,8 +11,9 @@ const BLOCKS_PER_SQUARE = Math.round(TOTAL_BLOCKS / STRIP_SQUARES)
 
 /**
  * Module 4 — Miner ACK Timeline.
- * Mine blocks (one ACK each) toward 1916 / 2016 ≈ 95%. The point the learner
- * should feel: activation is a slow, repeated signal, not one switch.
+ * Teaches WHAT (miners ACK blocks), HOW (trailing 2016-block window, support
+ * decays), WHY (threshold reveals cartel-vs-liveness tradeoff → ~95%),
+ * and HOW-WE-KNOW (falsifier tied to BIP300).
  */
 export function AckTimeline({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
@@ -25,6 +26,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
   return (
     <StepFrame step={step} canAdvance={met} nextLabel="Activate the slot">
       <div className="ack">
+        {/* ── Meter ── */}
         <div className="ack__meter">
           <div className="ack__stats">
             <span>
@@ -37,7 +39,8 @@ export function AckTimeline({ step }: { step: LessonStep }) {
               {TOTAL_BLOCKS.toLocaleString()} blocks with an{' '}
               <Term id="ack" />
               <br />
-              target: {ackThreshold.toLocaleString()} (~95%)
+              target: {ackThreshold.toLocaleString()} (
+              {((ackThreshold / TOTAL_BLOCKS) * 100).toFixed(1)}%)
             </span>
           </div>
 
@@ -53,7 +56,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             <div
               className="ack__threshold"
               style={{ left: `${thresholdPct}%` }}
-              title="Activation threshold (~95%)"
+              title={`Activation threshold (${thresholdPct.toFixed(1)}%)`}
             />
           </div>
 
@@ -71,50 +74,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
           </p>
         </div>
 
-        <div className="ack__controls">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'MINE_BLOCKS', amount: 1 })}
-            disabled={ackCount >= TOTAL_BLOCKS}
-          >
-            ⛏ Mine next block
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'MINE_BLOCKS', amount: 100 })}
-            disabled={ackCount >= TOTAL_BLOCKS}
-          >
-            ⛏ Mine 100 blocks
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'SET_ACK_COUNT', count: 0 })}
-          >
-            ↺ Reset
-          </button>
-        </div>
-
-        <label>
-          <span className="sr-only">Set ACK count with a slider</span>
-          <input
-            className="ack__slider"
-            type="range"
-            min={0}
-            max={TOTAL_BLOCKS}
-            value={ackCount}
-            onChange={(e) =>
-              dispatch({
-                type: 'SET_ACK_COUNT',
-                count: Number(e.target.value),
-              })
-            }
-            aria-label={`ACK count, ${ackCount} of ${TOTAL_BLOCKS}`}
-          />
-        </label>
-
+        {/* ── Representative strip ── */}
         <div>
           <div
             className="ack__strip"
@@ -134,6 +94,120 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             {BLOCKS_PER_SQUARE} blocks. One real block holds at most one ACK.
           </p>
         </div>
+
+        {/* ── (a) Controls ── */}
+        <div className="ack__controls">
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 100, supporting: true })
+            }
+            disabled={ackCount >= TOTAL_BLOCKS}
+          >
+            ⛏ Mine 100 — miners ACK
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 1, supporting: true })
+            }
+            disabled={ackCount >= TOTAL_BLOCKS}
+          >
+            ⛏ Mine 1 — ACK
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 100, supporting: false })
+            }
+            disabled={ackCount <= 0}
+          >
+            ⛏ Mine 100 — miners stop ACKing
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => dispatch({ type: 'SET_ACK_COUNT', count: 0 })}
+          >
+            ↺ Reset
+          </button>
+        </div>
+        <p className="ack__strip-note">
+          ACKs are counted over the trailing 2016 blocks. Push support up, then
+          mine without ACKing — watch it fall. Activation needs sustained
+          support, not one spike.
+        </p>
+
+        {/* ── (b) Threshold probe ── */}
+        <div className="ack__meter">
+          <label htmlFor="ack-threshold-slider" style={{ display: 'block', marginBottom: 'var(--sp-2)', fontSize: 'var(--fs-300)', color: 'var(--text-muted)' }}>
+            Activation threshold:{' '}
+            <strong>
+              {ackThreshold.toLocaleString()} of {TOTAL_BLOCKS} blocks (
+              {thresholdPct.toFixed(1)}%)
+            </strong>
+          </label>
+          <input
+            id="ack-threshold-slider"
+            className="ack__slider"
+            type="range"
+            min={1008}
+            max={2016}
+            value={ackThreshold}
+            onChange={(e) =>
+              dispatch({
+                type: 'SET_ACK_THRESHOLD',
+                count: Number(e.target.value),
+              })
+            }
+            aria-label={`Activation threshold, ${ackThreshold} of 2016 blocks`}
+          />
+          <div className="ack__callout">
+            {thresholdPct < 60 ? (
+              <>
+                <span aria-hidden="true">⚠</span>{' '}
+                <span>
+                  <strong>Low bar:</strong> a bare-majority cartel could force a
+                  sidechain the rest of the network rejects.
+                </span>
+              </>
+            ) : thresholdPct >= 99 ? (
+              <>
+                <span aria-hidden="true">⚠</span>{' '}
+                <span>
+                  <strong>Near-unanimous:</strong> a single hold-out could freeze
+                  activation forever — a liveness risk.
+                </span>
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">≈95%</span>{' '}
+                <span>
+                  is the balance: high enough that no cartel can force it, low
+                  enough that a few hold-outs cannot freeze it.
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── (c) How we know / falsifier ── */}
+        <div className="ack__how">
+          <strong>How we know:</strong> every{' '}
+          <Term id="full-node">full node</Term> checks this against the public
+          block history (BIP300). Falsifier — a sidechain that activated without
+          sustained ~95% ACKs would be rejected by nodes.
+        </div>
+
+        {/* ── (d) Analogy helper (subordinate) ── */}
+        <aside className="ack__helper" aria-label="Analogy helper">
+          <strong>Picture it:</strong> the highway authority repeatedly voting to
+          open a new exit — one vote is not enough; they must keep voting, in the
+          open, for the exit to open.
+        </aside>
       </div>
     </StepFrame>
   )

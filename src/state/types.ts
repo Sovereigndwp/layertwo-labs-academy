@@ -95,7 +95,8 @@ export type LessonAction =
   | { type: 'SET_ADDRESS_BYTES'; tag: string; unique: boolean }
   | { type: 'SELECT_RELEASE'; releaseId: string }
   | { type: 'SET_ACK_COUNT'; count: number }
-  | { type: 'MINE_BLOCKS'; amount: number }
+  | { type: 'MINE_BLOCKS'; amount: number; supporting: boolean }
+  | { type: 'SET_ACK_THRESHOLD'; count: number }
   | { type: 'SET_ACTIVATION'; status: ActivationStatus }
   | { type: 'SET_NODE_CONNECTED'; connected: boolean }
   | { type: 'ANSWER_QUIZ'; questionId: string; choiceId: string }

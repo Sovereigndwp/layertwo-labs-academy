@@ -507,6 +507,37 @@ body {
   font-size: 0.78rem;
   color: var(--text-faint);
 }
+.ack__callout {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-300);
+  color: var(--text);
+}
+.ack__how {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.ack__helper {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-faint);
+  font-style: italic;
+  line-height: 1.5;
+}
 
 /* ---------------- Activation ---------------- */
 .activation {

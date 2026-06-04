@@ -54,7 +54,18 @@ export function lessonReducer(
       return { ...state, ackCount: clampAck(action.count) }
 
     case 'MINE_BLOCKS':
-      return { ...state, ackCount: clampAck(state.ackCount + action.amount) }
+      return {
+        ...state,
+        ackCount: action.supporting
+          ? clampAck(state.ackCount + action.amount)
+          : clampAck(state.ackCount - action.amount),
+      }
+
+    case 'SET_ACK_THRESHOLD':
+      return {
+        ...state,
+        ackThreshold: Math.max(1008, Math.min(2016, action.count)),
+      }
 
     case 'SET_ACTIVATION':
       return { ...state, activationStatus: action.status }

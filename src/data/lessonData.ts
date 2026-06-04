@@ -282,9 +282,10 @@ export const lessonData: LessonData = {
       navLabel: 'Miner ACKs',
       headline: 'Miners signal support one block at a time.',
       explain:
-        'A proposal is not accepted by a vote on one day. Miners include one ACK — one signal of recognition — per block. The future target is 1916 of the past 2016 blocks, about 95%.',
-      actionHint: 'Mine blocks to add ACKs and watch the percentage rise.',
-      why: 'Activation is slow on purpose. Repeated signals over time give the whole network a chance to notice and react before anything changes.',
+        'Activating a sidechain changes what Bitcoin miners collectively agree to enforce. To stop a small group from sneaking that change in, the rule demands a signal that is costly (each ACK takes a mined block), sustained (counted over the trailing 2016 blocks, so old ACKs roll off), and public (anyone can check it). The slot activates only while support stays above a high bar — about 95%.',
+      actionHint:
+        'Mine blocks with and without miner support, and move the threshold, to see why the bar sits near 95% — and why one spike is not enough.',
+      why: 'A single block, or a one-time spike, cannot flip a sidechain on. Because support is measured over a long public window, sneaking one in would be costly and visible — and a node would reject it.',
     },
     {
       id: 'activation',
