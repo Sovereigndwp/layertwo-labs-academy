@@ -48,7 +48,7 @@ export interface LessonState {
   // --- Module 4: Miner ACK Timeline ---
   /** How many of the past blocks contain an ACK. */
   ackCount: number
-  /** ACKs required to activate. 1916 of 2016 ≈ 95%. */
+  /** ACKs required to activate. Enforcer: unused slot activates at 1815 of 2016 blocks (~90%) on mainnet. */
   ackThreshold: number
   /** Run-length encoding of the trailing ≤2016 blocks; front = oldest. */
   ackWindow: AckRun[]
@@ -82,7 +82,7 @@ export const initialLessonState: LessonState = {
   isAddressBytesUnique: null,
   selectedRelease: null,
   ackCount: 0,
-  ackThreshold: 1916, // ≈ 95% of 2016 blocks (the *future* target)
+  ackThreshold: 1815, // ~90% (Enforcer: unused slot activates at 1815 of a 2016-block window)
   ackWindow: [],
   activationStatus: 'not proposed',
   nodeConnected: false,

@@ -147,13 +147,14 @@ export const lessonData: LessonData = {
     },
     {
       id: '256-slots',
-      text: 'A Drivechain mainchain reserves 256 sidechain slots; each slot can be assigned to one sidechain.',
+      text: 'A Drivechain mainchain has exactly 256 sidechain slots because the sidechain number is a single byte — 256 possible values (0–255).',
       tier: 'DEV',
       sources: [
-        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+        { label: 'bip300301_enforcer (lib/types.rs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/types.rs' },
+        { label: 'BIP300 spec (bips.dev)', url: 'https://bips.dev/300/' },
       ],
-      verifiedOn: '2026-06-03',
-      status: 'needs-recheck',
+      verifiedOn: '2026-06-04',
+      status: 'verified',
     },
     {
       id: 'one-ack-per-block',
@@ -167,13 +168,31 @@ export const lessonData: LessonData = {
     },
     {
       id: 'activation-threshold',
-      text: 'The intended activation threshold is roughly 95% of the past 2016 blocks (1916/2016); testing networks have used a lower threshold.',
+      text: "In the current Enforcer software, an unused sidechain slot activates when it reaches 1815 ACKs within a 2016-block window (~90%) on mainnet; test networks use a much lower value (5). The 95% in Paul Sztorc's earlier 'Creating a Sidechain' article was approximate.",
       tier: 'DEV',
       sources: [
-        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+        { label: 'bip300301_enforcer (lib/types.rs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/types.rs' },
       ],
-      verifiedOn: '2026-06-03',
-      status: 'needs-recheck',
+      verifiedOn: '2026-06-04',
+      status: 'verified',
+    },
+    {
+      id: 'slot-uniqueness',
+      text: 'The Enforcer ignores a re-proposal of an existing (slot, description), so miners cannot reset a slot’s vote count — keeping each slot’s identity stable.',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer (validator/task)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/validator/task/mod.rs' },
+      ],
+      verifiedOn: '2026-06-04',
+      status: 'verified',
+    },
+    {
+      id: 'software-hashes-human-only',
+      text: "The software hashes in a sidechain proposal (sha256 of the release, git commit) are not enforced by BIP300 — they are 'for human purposes only,' to reduce disputes over the canonical software.",
+      tier: 'DEV',
+      sources: [{ label: 'BIP300 spec (bips.dev)', url: 'https://bips.dev/300/' }],
+      verifiedOn: '2026-06-04',
+      status: 'verified',
     },
     {
       id: 'enforcer-stack',
@@ -282,10 +301,10 @@ export const lessonData: LessonData = {
       navLabel: 'Miner ACKs',
       headline: 'Miners signal support one block at a time.',
       explain:
-        'Activating a sidechain changes what Bitcoin miners collectively agree to enforce. To stop a small group from sneaking that change in, the rule demands a signal that is costly (each ACK takes a mined block), sustained (counted over the trailing 2016 blocks, so old ACKs roll off), and public (anyone can check it). The slot activates only while support stays above a high bar — about 95%.',
+        'Activating a sidechain changes what Bitcoin miners collectively enforce. The current Enforcer software requires a strong supermajority: a slot activates only when about 90% of the past 2016 blocks (1815 of them) carry an ACK, sustained over roughly two weeks. A high bar resists a hostile minority — but it still means miners, together, decide. That reliance on miners is exactly why Drivechain is debated.',
       actionHint:
-        'Mine blocks with and without miner support, and move the threshold, to see why the bar sits near 95% — and why one spike is not enough.',
-      why: 'A single block, or a one-time spike, cannot flip a sidechain on. Because support is measured over a long public window, sneaking one in would be costly and visible — and a node would reject it.',
+        'Mine blocks with and without support, and move the bar, to see why the software sets it near 90% — and what miner power means.',
+      why: 'Setting the bar near 90% (not a bare majority) makes it hard for a small group to force a sidechain through — but a determined ~10% can also stall one. Ultimately miners collectively hold the power: supporters say they are already trusted to order blocks, critics say it is too much. Either way the rule is public and every node checks it.',
     },
     {
       id: 'activation',
@@ -401,7 +420,7 @@ export const lessonData: LessonData = {
           label: 'Miners ACK one block at a time toward a high threshold',
           correct: true,
           feedback:
-            'Exactly. Reaching ~95% of the past 2016 blocks takes many blocks, which gives everyone time to notice.',
+            "Exactly. A proposal must sustain a majority over 2016 blocks (about two weeks) — one block or a short spike is not enough, which gives everyone time to notice.",
         },
         {
           id: 'q2b',
@@ -527,7 +546,7 @@ export const lessonData: LessonData = {
       term: 'ACK',
       short:
         'A miner’s signal that recognizes a sidechain proposal. One ACK can be included per block.',
-      example: 'The future target is 1916 of the past 2016 blocks (~95%).',
+      example: 'The Enforcer activates an unused slot when 1815 of 2016 blocks (~90%) carry an ACK on mainnet.',
     },
     {
       id: 'address-bytes',

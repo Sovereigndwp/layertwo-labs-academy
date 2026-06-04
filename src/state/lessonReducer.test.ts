@@ -47,9 +47,9 @@ describe('automatic activation', () => {
     expect(s.activationStatus).toBe('active')
   })
   it('lowering the threshold below current support auto-activates', () => {
-    let s = lessonReducer(initialLessonState, { type: 'MINE_BLOCKS', amount: 1100, supporting: true })
-    expect(s.activationStatus).not.toBe('active')
-    s = lessonReducer(s, { type: 'SET_ACK_THRESHOLD', count: 1008 }) // 50%
+    let s = lessonReducer(initialLessonState, { type: 'MINE_BLOCKS', amount: 1008, supporting: true })
+    expect(s.activationStatus).not.toBe('active') // 1008 < default 1815
+    s = lessonReducer(s, { type: 'SET_ACK_THRESHOLD', count: 1008 }) // bar drops to a bare majority
     expect(s.activationStatus).toBe('active')
   })
 })

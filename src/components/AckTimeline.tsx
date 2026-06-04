@@ -12,8 +12,8 @@ const BLOCKS_PER_SQUARE = Math.round(TOTAL_BLOCKS / STRIP_SQUARES)
 /**
  * Module 4 — Miner ACK Timeline.
  * Teaches WHAT (miners ACK blocks), HOW (trailing 2016-block window, support
- * decays), WHY (threshold reveals cartel-vs-liveness tradeoff → ~95%),
- * and HOW-WE-KNOW (falsifier tied to BIP300).
+ * decays), WHY (threshold is the Enforcer's ~90% strong supermajority — and
+ * why that is debated), and HOW-WE-KNOW (falsifier tied to lib/types.rs).
  */
 export function AckTimeline({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
@@ -39,8 +39,8 @@ export function AckTimeline({ step }: { step: LessonStep }) {
               {TOTAL_BLOCKS.toLocaleString()} blocks with an{' '}
               <Term id="ack" />
               <br />
-              target: {ackThreshold.toLocaleString()} (
-              {((ackThreshold / TOTAL_BLOCKS) * 100).toFixed(1)}%)
+              target: {ackThreshold.toLocaleString()} of {TOTAL_BLOCKS} (
+              {thresholdPct.toFixed(0)}%)
             </span>
           </div>
 
@@ -165,64 +165,45 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             aria-label={`Activation threshold, ${ackThreshold} of 2016 blocks`}
           />
           <div className="ack__callout">
-            {thresholdPct <= 55 ? (
+            {thresholdPct >= 99 ? (
               <>
                 <span aria-hidden="true">⚠</span>{' '}
                 <span>
-                  <strong>Low bar:</strong> at this threshold, a bare-majority
-                  cartel starting at 51% could force a sidechain the rest of the
-                  network rejects. This is why the bar sits near 95%.
+                  <strong>Near-unanimous —</strong> even a tiny holdout coalition could freeze activation forever. Higher than the software's ~90% bar.
                 </span>
               </>
-            ) : thresholdPct < 60 ? (
+            ) : thresholdPct >= 80 ? (
               <>
-                <span aria-hidden="true">⚠</span>{' '}
+                <span aria-hidden="true">ℹ</span>{' '}
                 <span>
-                  <strong>Low bar:</strong> a bare-majority cartel could force a
-                  sidechain the rest of the network rejects.
-                </span>
-              </>
-            ) : thresholdPct >= 99 ? (
-              <>
-                <span aria-hidden="true">⚠</span>{' '}
-                <span>
-                  <strong>Near-unanimous:</strong> a single hold-out could freeze
-                  activation forever — a liveness risk.
+                  <strong>The Enforcer's real rule:</strong> a strong supermajority — about 90% (1815 of 2016 blocks) of sustained hashrate — activates the slot. A high bar that resists a hostile minority; but miners still collectively decide, which is the heart of the Drivechain debate.
                 </span>
               </>
             ) : (
               <>
-                <span aria-hidden="true">≈95%</span>{' '}
+                <span aria-hidden="true">⚠</span>{' '}
                 <span>
-                  is the balance: high enough that no cartel can force it, low
-                  enough that a few hold-outs cannot freeze it.
+                  <strong>Below the software's ~90% bar:</strong> a smaller coalition of miners could force a sidechain through. The Enforcer sets the bar high on purpose.
                 </span>
               </>
             )}
           </div>
         </div>
 
-        {/* ── (b2) Observed-consequence callout: low-threshold activation ── */}
-        {met && thresholdPct < 60 && (
+        {/* ── (b2) Discovery callout: below-threshold activation ── */}
+        {met && thresholdPct < 80 && (
           <div className="ack__callout" role="alert">
-            <span aria-hidden="true">⚠</span>{' '}
+            <span aria-hidden="true">ℹ</span>{' '}
             <span>
-              You just activated a sidechain with only{' '}
-              {thresholdPct.toFixed(0)}% support — a bare-majority cartel
-              (≥51%) could force a sidechain the rest of the network rejects.
-              This is why the bar sits near 95%.
+              You activated with only {thresholdPct.toFixed(0)}% — below the Enforcer's ~90% bar. A smaller coalition of miners forced it through; the real software sets the bar high to prevent exactly this. Note it still trusts miners collectively.
             </span>
           </div>
         )}
 
         {/* ── (c) How we know / falsifier ── */}
         <div className="ack__how">
-          <strong>How we know:</strong> every{' '}
-          <Term id="full-node">full node</Term> checks this against the public
-          block history (BIP300 specifies the mechanism; the exact threshold is
-          implementation-defined — the intended target is about 95%). Falsifier
-          — a sidechain that activated without sustained support above the
-          activation threshold would be rejected by nodes.
+          <strong>How we know:</strong> the Enforcer activates an unused slot at 1815 of 2016 blocks (~90%) — see lib/types.rs in bip300301_enforcer. Every{' '}
+          <Term id="full-node">full node</Term> checks this against the public block history. Falsifier — a sidechain that activated without ~90% sustained support over its window would be rejected by nodes running the Enforcer.
         </div>
 
         {/* ── (d) Analogy helper (subordinate) ── */}
