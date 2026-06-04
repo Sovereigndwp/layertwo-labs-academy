@@ -11,8 +11,9 @@ const BLOCKS_PER_SQUARE = Math.round(TOTAL_BLOCKS / STRIP_SQUARES)
 
 /**
  * Module 4 — Miner ACK Timeline.
- * Mine blocks (one ACK each) toward 1916 / 2016 ≈ 95%. The point the learner
- * should feel: activation is a slow, repeated signal, not one switch.
+ * Teaches WHAT (miners ACK blocks), HOW (trailing 2016-block window, support
+ * decays), WHY (threshold is the Enforcer's ~90% strong supermajority — and
+ * why that is debated), and HOW-WE-KNOW (falsifier tied to lib/types.rs).
  */
 export function AckTimeline({ step }: { step: LessonStep }) {
   const { state, dispatch } = useLesson()
@@ -23,8 +24,9 @@ export function AckTimeline({ step }: { step: LessonStep }) {
   const filledSquares = Math.round((ackCount / TOTAL_BLOCKS) * STRIP_SQUARES)
 
   return (
-    <StepFrame step={step} canAdvance={met} nextLabel="Activate the slot">
+    <StepFrame step={step} canAdvance={met} nextLabel="See what activated">
       <div className="ack">
+        {/* ── Meter ── */}
         <div className="ack__meter">
           <div className="ack__stats">
             <span>
@@ -37,7 +39,8 @@ export function AckTimeline({ step }: { step: LessonStep }) {
               {TOTAL_BLOCKS.toLocaleString()} blocks with an{' '}
               <Term id="ack" />
               <br />
-              target: {ackThreshold.toLocaleString()} (~95%)
+              target: {ackThreshold.toLocaleString()} of {TOTAL_BLOCKS} (
+              {thresholdPct.toFixed(0)}%)
             </span>
           </div>
 
@@ -53,7 +56,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             <div
               className="ack__threshold"
               style={{ left: `${thresholdPct}%` }}
-              title="Activation threshold (~95%)"
+              title={`Activation threshold (${thresholdPct.toFixed(1)}%)`}
             />
           </div>
 
@@ -71,50 +74,7 @@ export function AckTimeline({ step }: { step: LessonStep }) {
           </p>
         </div>
 
-        <div className="ack__controls">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'MINE_BLOCKS', amount: 1 })}
-            disabled={ackCount >= TOTAL_BLOCKS}
-          >
-            ⛏ Mine next block
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'MINE_BLOCKS', amount: 100 })}
-            disabled={ackCount >= TOTAL_BLOCKS}
-          >
-            ⛏ Mine 100 blocks
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => dispatch({ type: 'SET_ACK_COUNT', count: 0 })}
-          >
-            ↺ Reset
-          </button>
-        </div>
-
-        <label>
-          <span className="sr-only">Set ACK count with a slider</span>
-          <input
-            className="ack__slider"
-            type="range"
-            min={0}
-            max={TOTAL_BLOCKS}
-            value={ackCount}
-            onChange={(e) =>
-              dispatch({
-                type: 'SET_ACK_COUNT',
-                count: Number(e.target.value),
-              })
-            }
-            aria-label={`ACK count, ${ackCount} of ${TOTAL_BLOCKS}`}
-          />
-        </label>
-
+        {/* ── Representative strip ── */}
         <div>
           <div
             className="ack__strip"
@@ -134,6 +94,124 @@ export function AckTimeline({ step }: { step: LessonStep }) {
             {BLOCKS_PER_SQUARE} blocks. One real block holds at most one ACK.
           </p>
         </div>
+
+        {/* ── (a) Controls ── */}
+        <div className="ack__controls">
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 100, supporting: true })
+            }
+            disabled={ackCount >= TOTAL_BLOCKS}
+          >
+            ⛏ Mine 100 — miners ACK
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 1, supporting: true })
+            }
+            disabled={ackCount >= TOTAL_BLOCKS}
+          >
+            ⛏ Mine 1 — ACK
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() =>
+              dispatch({ type: 'MINE_BLOCKS', amount: 100, supporting: false })
+            }
+          >
+            ⛏ Mine 100 — miners stop ACKing
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => dispatch({ type: 'RESET_ACKS' })}
+          >
+            ↺ Reset
+          </button>
+        </div>
+        <p className="ack__strip-note">
+          ACKs are counted over the trailing 2016 blocks. Mine with support to
+          raise it; mine without ACKing and the oldest ACKs roll out of the
+          window and the count falls. Support must be sustained.
+        </p>
+
+        {/* ── (b) Threshold probe ── */}
+        <div className="ack__meter">
+          <label htmlFor="ack-threshold-slider" style={{ display: 'block', marginBottom: 'var(--sp-2)', fontSize: 'var(--fs-300)', color: 'var(--text-muted)' }}>
+            Activation threshold:{' '}
+            <strong>
+              {ackThreshold.toLocaleString()} of {TOTAL_BLOCKS} blocks (
+              {thresholdPct.toFixed(1)}%)
+            </strong>
+          </label>
+          <input
+            id="ack-threshold-slider"
+            className="ack__slider"
+            type="range"
+            min={1008}
+            max={2016}
+            value={ackThreshold}
+            onChange={(e) =>
+              dispatch({
+                type: 'SET_ACK_THRESHOLD',
+                count: Number(e.target.value),
+              })
+            }
+            aria-label={`Activation threshold, ${ackThreshold} of 2016 blocks`}
+          />
+          <div className="ack__callout">
+            {thresholdPct >= 99 ? (
+              <>
+                <span aria-hidden="true">⚠</span>{' '}
+                <span>
+                  <strong>Near-unanimous —</strong> even a tiny holdout coalition could freeze activation forever. Higher than the software's ~90% bar.
+                </span>
+              </>
+            ) : thresholdPct >= 80 ? (
+              <>
+                <span aria-hidden="true">ℹ</span>{' '}
+                <span>
+                  <strong>The Enforcer's real rule:</strong> a strong supermajority — about 90% (1815 of 2016 blocks) of sustained hashrate — activates the slot. A high bar that resists a hostile minority; but miners still collectively decide, which is the heart of the Drivechain debate.
+                </span>
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">⚠</span>{' '}
+                <span>
+                  <strong>Below the software's ~90% bar:</strong> a smaller coalition of miners could force a sidechain through. The Enforcer sets the bar high on purpose.
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── (b2) Discovery callout: below-threshold activation ── */}
+        {met && thresholdPct < 80 && (
+          <div className="ack__callout" role="alert">
+            <span aria-hidden="true">ℹ</span>{' '}
+            <span>
+              You activated with only {thresholdPct.toFixed(0)}% — below the Enforcer's ~90% bar. A smaller coalition of miners forced it through; the real software sets the bar high to prevent exactly this. Note it still trusts miners collectively.
+            </span>
+          </div>
+        )}
+
+        {/* ── (c) How we know / falsifier ── */}
+        <div className="ack__how">
+          <strong>How we know:</strong> the Enforcer activates an unused slot at 1815 of 2016 blocks (~90%) — see lib/types.rs in bip300301_enforcer. Every{' '}
+          <Term id="full-node">full node</Term> checks this against the public block history. Falsifier — a sidechain that activated without ~90% sustained support over its window would be rejected by nodes running the Enforcer.
+        </div>
+
+        {/* ── (d) Analogy helper (subordinate) ── */}
+        <aside className="ack__helper" aria-label="Analogy helper">
+          <strong>Picture it:</strong> the highway authority repeatedly voting to
+          open a new exit — one vote is not enough; they must keep voting, in the
+          open, for the exit to open.
+        </aside>
       </div>
     </StepFrame>
   )

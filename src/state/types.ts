@@ -8,13 +8,17 @@
 // ---------------------------------------------------------------------------
 
 /** Bump when the persisted shape changes incompatibly. */
-export const STORAGE_VERSION = 1
+// v2: corrected ackThreshold default to 1815 (~90%) + added ackWindow; discard stale v1 saves.
+export const STORAGE_VERSION = 2
 
 export type ActivationStatus =
   | 'not proposed'
   | 'proposed'
   | 'activating'
   | 'active'
+
+/** Run-length encoded entry for the rolling ACK window. */
+export interface AckRun { acked: boolean; n: number }
 
 /** A learner's answer to one reflection/quiz question. */
 export interface QuizAnswer {
@@ -45,8 +49,10 @@ export interface LessonState {
   // --- Module 4: Miner ACK Timeline ---
   /** How many of the past blocks contain an ACK. */
   ackCount: number
-  /** ACKs required to activate. 1916 of 2016 ≈ 95%. */
+  /** ACKs required to activate. Enforcer: unused slot activates at 1815 of 2016 blocks (~90%) on mainnet. */
   ackThreshold: number
+  /** Run-length encoding of the trailing ≤2016 blocks; front = oldest. */
+  ackWindow: AckRun[]
 
   // --- Module 5: Activation ---
   activationStatus: ActivationStatus
@@ -77,7 +83,8 @@ export const initialLessonState: LessonState = {
   isAddressBytesUnique: null,
   selectedRelease: null,
   ackCount: 0,
-  ackThreshold: 1916, // ≈ 95% of 2016 blocks (the *future* target)
+  ackThreshold: 1815, // ~90% (Enforcer: unused slot activates at 1815 of a 2016-block window)
+  ackWindow: [],
   activationStatus: 'not proposed',
   nodeConnected: false,
   quizAnswers: [],
@@ -94,8 +101,9 @@ export type LessonAction =
   | { type: 'SET_SIDECHAIN_NAME'; name: string }
   | { type: 'SET_ADDRESS_BYTES'; tag: string; unique: boolean }
   | { type: 'SELECT_RELEASE'; releaseId: string }
-  | { type: 'SET_ACK_COUNT'; count: number }
-  | { type: 'MINE_BLOCKS'; amount: number }
+  | { type: 'MINE_BLOCKS'; amount: number; supporting: boolean }
+  | { type: 'SET_ACK_THRESHOLD'; count: number }
+  | { type: 'RESET_ACKS' }
   | { type: 'SET_ACTIVATION'; status: ActivationStatus }
   | { type: 'SET_NODE_CONNECTED'; connected: boolean }
   | { type: 'ANSWER_QUIZ'; questionId: string; choiceId: string }

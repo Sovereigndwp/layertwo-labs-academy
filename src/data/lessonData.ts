@@ -147,13 +147,14 @@ export const lessonData: LessonData = {
     },
     {
       id: '256-slots',
-      text: 'A Drivechain mainchain reserves 256 sidechain slots; each slot can be assigned to one sidechain.',
+      text: 'A Drivechain mainchain has exactly 256 sidechain slots because the sidechain number is a single byte — 256 possible values (0–255).',
       tier: 'DEV',
       sources: [
-        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+        { label: 'bip300301_enforcer (lib/types.rs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/types.rs' },
+        { label: 'BIP300 spec (bips.dev)', url: 'https://bips.dev/300/' },
       ],
-      verifiedOn: '2026-06-03',
-      status: 'needs-recheck',
+      verifiedOn: '2026-06-04',
+      status: 'verified',
     },
     {
       id: 'one-ack-per-block',
@@ -167,13 +168,31 @@ export const lessonData: LessonData = {
     },
     {
       id: 'activation-threshold',
-      text: 'The intended activation threshold is roughly 95% of the past 2016 blocks (1916/2016); testing networks have used a lower threshold.',
+      text: "In the current Enforcer software, an unused sidechain slot activates when it reaches 1815 ACKs within a 2016-block window (~90%) on mainnet; test networks use a much lower value (5). The 95% in Paul Sztorc's earlier 'Creating a Sidechain' article was approximate.",
       tier: 'DEV',
       sources: [
-        { label: 'Creating a Sidechain — Paul Sztorc', url: 'https://www.drivechain.info' },
+        { label: 'bip300301_enforcer (lib/types.rs)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/types.rs' },
       ],
-      verifiedOn: '2026-06-03',
-      status: 'needs-recheck',
+      verifiedOn: '2026-06-04',
+      status: 'verified',
+    },
+    {
+      id: 'slot-uniqueness',
+      text: 'The Enforcer ignores a re-proposal of an existing (slot, description), so miners cannot reset a slot’s vote count — keeping each slot’s identity stable.',
+      tier: 'DEV',
+      sources: [
+        { label: 'bip300301_enforcer (validator/task)', url: 'https://github.com/LayerTwo-Labs/bip300301_enforcer/blob/master/lib/validator/task/mod.rs' },
+      ],
+      verifiedOn: '2026-06-04',
+      status: 'verified',
+    },
+    {
+      id: 'software-hashes-human-only',
+      text: "The software hashes in a sidechain proposal (sha256 of the release, git commit) are not enforced by BIP300 — they are 'for human purposes only,' to reduce disputes over the canonical software.",
+      tier: 'DEV',
+      sources: [{ label: 'BIP300 spec (bips.dev)', url: 'https://bips.dev/300/' }],
+      verifiedOn: '2026-06-04',
+      status: 'verified',
     },
     {
       id: 'enforcer-stack',
@@ -252,9 +271,11 @@ export const lessonData: LessonData = {
       navLabel: 'Choose a slot',
       headline: 'Pick an empty slot for your sidechain.',
       explain:
-        'The Bitcoin mainchain has 256 numbered slots — think of them as exits on a highway. Most are just an exit sign with no road built behind them yet. We will claim slot 1 for a sidechain called Testchain.',
-      actionHint: 'Click slot 1 to claim it.',
-      why: 'Claiming the exit does not build the road. The slot only reserves the spot — someone still has to build and run the real sidechain software.',
+        "A slot is just a number, and the range is not arbitrary. A sidechain's number is stored in a single byte, so there are exactly 256 possible slots — no more. Reserving slot 1 claims one of those 256 numbers; it does not build or run anything. The number is public, so everyone agrees which sidechain is which without a middleman.",
+      actionHint:
+        'Reserve slot 1 and name it — then probe the limit below: try to propose a slot past the last one.',
+      why:
+        'Because the slot is a public number capped by one byte, the set of sidechains stays small (256) and everyone can independently agree which is which — no coordinator and no registrar to capture.',
     },
     {
       id: 'identity',
@@ -282,19 +303,20 @@ export const lessonData: LessonData = {
       navLabel: 'Miner ACKs',
       headline: 'Miners signal support one block at a time.',
       explain:
-        'A proposal is not accepted by a vote on one day. Miners include one ACK — one signal of recognition — per block. The future target is 1916 of the past 2016 blocks, about 95%.',
-      actionHint: 'Mine blocks to add ACKs and watch the percentage rise.',
-      why: 'Activation is slow on purpose. Repeated signals over time give the whole network a chance to notice and react before anything changes.',
+        'Activating a sidechain changes what Bitcoin miners collectively enforce. The current Enforcer software requires a strong supermajority: a slot activates only when about 90% of the past 2016 blocks (1815 of them) carry an ACK, sustained over roughly two weeks. A high bar resists a hostile minority — but it still means miners, together, decide. That reliance on miners is exactly why Drivechain is debated.',
+      actionHint:
+        'Mine blocks with and without support, and move the bar, to see why the software sets it near 90% — and what miner power means.',
+      why: 'Setting the bar near 90% (not a bare majority) makes it hard for a small group to force a sidechain through — but a determined ~10% can also stall one. Ultimately miners collectively hold the power: supporters say they are already trusted to order blocks, critics say it is too much. Either way the rule is public and every node checks it.',
     },
     {
       id: 'activation',
       kind: 'activation',
       navLabel: 'Activate',
-      headline: 'Enough signals, and the slot flips to active.',
+      headline: 'Enough signals, and the slot flips to active — automatically.',
       explain:
-        'Once the ACK threshold is reached, the slot changes from "proposed" to "active." Something changed — and something important did not.',
-      actionHint: 'Activate the slot, then read what changed.',
-      why: 'Activation means the network recognizes the slot. It does not magically run the software for you — that part is still up to people.',
+        "Nobody presses an 'activate' button. The instant sustained support crosses the threshold, every Bitcoin node's rules recognize the slot as active on their own — automatically. That is the whole point of making activation a rule, not a decision: no person or company can flip it on or off.",
+      actionHint: 'See what the network did automatically.',
+      why: 'Because activation is an automatic consequence of the public ACK record, there is no authority to capture or bribe — the rule decides, and everyone can check it.',
     },
     {
       id: 'connect',
@@ -400,7 +422,7 @@ export const lessonData: LessonData = {
           label: 'Miners ACK one block at a time toward a high threshold',
           correct: true,
           feedback:
-            'Exactly. Reaching ~95% of the past 2016 blocks takes many blocks, which gives everyone time to notice.',
+            "Exactly. A proposal must sustain a majority over 2016 blocks (about two weeks) — one block or a short spike is not enough, which gives everyone time to notice.",
         },
         {
           id: 'q2b',
@@ -526,7 +548,7 @@ export const lessonData: LessonData = {
       term: 'ACK',
       short:
         'A miner’s signal that recognizes a sidechain proposal. One ACK can be included per block.',
-      example: 'The future target is 1916 of the past 2016 blocks (~95%).',
+      example: 'The Enforcer activates an unused slot when 1815 of 2016 blocks (~90%) carry an ACK on mainnet.',
     },
     {
       id: 'address-bytes',

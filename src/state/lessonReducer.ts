@@ -12,8 +12,17 @@ function clampStep(step: number): number {
   return Math.max(0, Math.min(LAST_STEP, step))
 }
 
-function clampAck(count: number): number {
-  return Math.max(0, Math.min(TOTAL_BLOCKS, count))
+/**
+ * In BIP300, activation is automatic: the instant sustained ACK support
+ * crosses the threshold, every node's rules recognize the slot as active on
+ * their own. Activation is also permanent — once flipped, it does not revert
+ * if support later decays.
+ */
+function withAutoActivation(state: LessonState): LessonState {
+  if (state.activationStatus !== 'active' && state.ackCount >= state.ackThreshold) {
+    return { ...state, activationStatus: 'active' }
+  }
+  return state
 }
 
 /**
@@ -50,11 +59,37 @@ export function lessonReducer(
     case 'SELECT_RELEASE':
       return { ...state, selectedRelease: action.releaseId }
 
-    case 'SET_ACK_COUNT':
-      return { ...state, ackCount: clampAck(action.count) }
+    case 'MINE_BLOCKS': {
+      const win = state.ackWindow.map((r) => ({ ...r }))
+      const last = win[win.length - 1]
+      if (last && last.acked === action.supporting) {
+        last.n += action.amount
+      } else {
+        win.push({ acked: action.supporting, n: action.amount })
+      }
+      // Evict oldest blocks so the window holds at most TOTAL_BLOCKS.
+      let total = win.reduce((s, r) => s + r.n, 0)
+      while (total > TOTAL_BLOCKS && win.length > 0) {
+        const over = total - TOTAL_BLOCKS
+        if (win[0].n <= over) {
+          total -= win[0].n
+          win.shift()
+        } else {
+          win[0].n -= over
+          total -= over
+        }
+      }
+      const ackCount = win.reduce((s, r) => s + (r.acked ? r.n : 0), 0)
+      return withAutoActivation({ ...state, ackWindow: win, ackCount })
+    }
 
-    case 'MINE_BLOCKS':
-      return { ...state, ackCount: clampAck(state.ackCount + action.amount) }
+    case 'RESET_ACKS':
+      return { ...state, ackWindow: [], ackCount: 0 }
+
+    case 'SET_ACK_THRESHOLD': {
+      const clamped = Math.max(1008, Math.min(2016, action.count))
+      return withAutoActivation({ ...state, ackThreshold: clamped })
+    }
 
     case 'SET_ACTIVATION':
       return { ...state, activationStatus: action.status }

@@ -98,20 +98,51 @@ body {
 
 /* ---------------- Fact badge (factual guardrail, always visible) -------- */
 .factbadge {
+  position: relative;
+  display: inline-flex;
+}
+.factbadge__trigger {
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
-  background: var(--orange-dim);
-  border: 1px solid var(--orange);
-  color: var(--orange-bright);
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: help;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
 }
-.factbadge__icon {
-  font-weight: 800;
+.factbadge__trigger:hover,
+.factbadge__trigger[aria-expanded='true'] {
+  border-color: var(--orange);
+  color: var(--orange-bright);
+}
+.factbadge__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: min(320px, 82vw);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: var(--sp-4);
+  text-align: left;
+}
+.factbadge__short {
+  margin: 0 0 var(--sp-2);
+  font-weight: 700;
+  color: var(--orange-bright);
+  font-size: var(--fs-300);
+}
+.factbadge__full {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-300);
+  line-height: 1.5;
 }
 
 /* ---------------- Progress rail ---------------- */
@@ -293,9 +324,11 @@ body {
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text-faint);
-  font-size: 0.6rem;
+  font-size: clamp(0.45rem, 0.6rem, 0.65rem);
+  line-height: 1;
   cursor: pointer;
   padding: 0;
+  overflow: hidden;
   display: grid;
   place-items: center;
 }
@@ -333,6 +366,70 @@ body {
   border-radius: 3px;
   border: 1px solid var(--border);
   display: inline-block;
+}
+
+/* ---------------- Slot probe (limit explorer) -------------------------- */
+.slot-probe {
+  margin-top: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+}
+.slot-probe label {
+  font-weight: 700;
+  color: var(--text);
+}
+.slot-probe input[type='number'] {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.slot-probe input[type='number']:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.slot-probe__feedback {
+  margin: 0;
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ---------------- Slot how-we-know (collision falsifier) --------------- */
+.slot-how {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--info, var(--border-strong));
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.slot-how strong {
+  color: var(--text);
+}
+
+/* ---------------- Slot analogy helper (secondary, labeled) ------------- */
+.slot-helper {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-faint);
+  font-style: italic;
+  line-height: 1.5;
+}
+.slot-helper strong {
+  color: var(--text-muted);
+  font-style: normal;
 }
 
 /* ---------------- Selectable option cards (identity, release) ---------- */
@@ -506,6 +603,37 @@ body {
 .ack__strip-note {
   font-size: 0.78rem;
   color: var(--text-faint);
+}
+.ack__callout {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-300);
+  color: var(--text);
+}
+.ack__how {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: var(--fs-300);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.ack__helper {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: var(--fs-300);
+  color: var(--text-faint);
+  font-style: italic;
+  line-height: 1.5;
 }
 
 /* ---------------- Activation ---------------- */
@@ -886,6 +1014,41 @@ body {
 }
 .sources dd {
   margin: 0 0 var(--sp-2);
+}
+.sources__summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: var(--sp-2) 0;
+}
+.sources__summary::-webkit-details-marker {
+  display: none;
+}
+.sources__summary::before {
+  content: '▸';
+  display: inline-block;
+  color: var(--text-faint);
+  transition: transform 0.15s ease;
+}
+.sources__disclosure[open] .sources__summary::before {
+  transform: rotate(90deg);
+}
+.sources__count {
+  font-weight: 400;
+  color: var(--text-faint);
+}
+.sources__body {
+  padding-top: var(--sp-3);
+}
+.sources__h {
+  margin: 0 0 var(--sp-2);
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: var(--fs-300);
 }
 .claimlist { list-style: none; padding: 0; display: grid; gap: var(--sp-2); }
 .claimlist li { font-size: var(--fs-300); color: var(--text-muted); line-height: 1.5; }
