@@ -10,7 +10,9 @@
 /** Bump when the persisted shape changes incompatibly. */
 // v2: corrected ackThreshold default to 1815 (~90%) + added ackWindow; discard stale v1 saves.
 // v3: added lesson-#2 fields (exploredLayers, hostileProbed, drivechainPlaced); discard stale v2 saves.
-export const STORAGE_VERSION = 3
+// v4: added lesson-#3 withdrawal-bundle vote fields (bundleAcks, bundleBlocksElapsed,
+//     bundleHostile); discard stale v3 saves.
+export const STORAGE_VERSION = 4
 
 export type ActivationStatus =
   | 'not proposed'
@@ -55,6 +57,17 @@ export interface LessonState {
   /** Run-length encoding of the trailing ≤2016 blocks; front = oldest. */
   ackWindow: AckRun[]
 
+  // --- Lesson #3: Withdrawal-bundle vote (separate from the lesson #1 slot vote) ---
+  // The bundle vote is modeled directly (no rolling RLE window): a counter that
+  // can move by ±1 per mined block, a countdown of blocks elapsed against the
+  // 26,300-block window, and a hostile-majority toggle that drives the count down.
+  /** ACKs accumulated on the current withdrawal bundle (0..threshold). */
+  bundleAcks: number
+  /** Blocks elapsed in the bundle's vote window (0..windowBlocks). At window end the bundle expires. */
+  bundleBlocksElapsed: number
+  /** True once the learner turns the hashrate hostile: mining then drives ACKs DOWN. */
+  bundleHostile: boolean
+
   // --- Module 5: Activation ---
   activationStatus: ActivationStatus
 
@@ -97,6 +110,9 @@ export const initialLessonState: LessonState = {
   ackCount: 0,
   ackThreshold: 1815, // ~90% (Enforcer: unused slot activates at 1815 of a 2016-block window)
   ackWindow: [],
+  bundleAcks: 0,
+  bundleBlocksElapsed: 0,
+  bundleHostile: false,
   activationStatus: 'not proposed',
   nodeConnected: false,
   quizAnswers: [],
@@ -119,6 +135,10 @@ export type LessonAction =
   | { type: 'MINE_BLOCKS'; amount: number; supporting: boolean }
   | { type: 'SET_ACK_THRESHOLD'; count: number }
   | { type: 'RESET_ACKS' }
+  // Lesson #3 withdrawal-bundle vote:
+  | { type: 'MINE_BUNDLE'; amount: number; windowBlocks: number; threshold: number }
+  | { type: 'SET_BUNDLE_HOSTILE'; hostile: boolean }
+  | { type: 'RESET_BUNDLE' }
   | { type: 'SET_ACTIVATION'; status: ActivationStatus }
   | { type: 'SET_NODE_CONNECTED'; connected: boolean }
   | { type: 'ANSWER_QUIZ'; questionId: string; choiceId: string }

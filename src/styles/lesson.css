@@ -600,6 +600,12 @@ body {
   background: var(--orange);
   border-color: var(--orange);
 }
+/* Withdrawal-bundle strip: blocks whose window has elapsed but were not ACKed
+   read as "spent time" — a faint outline distinct from the orange ACK fill. */
+.ack__block[data-elapsed='true']:not([data-ack='true']) {
+  border-color: var(--text-faint);
+  border-style: dashed;
+}
 .ack__strip-note {
   font-size: 0.78rem;
   color: var(--text-faint);

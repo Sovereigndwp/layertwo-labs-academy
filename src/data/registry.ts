@@ -1,7 +1,8 @@
 import { lessonData, type LessonData } from './lessonData'
 import { layersMapLesson } from './lessons/layers-map'
+import { drivechainWithdrawalLesson } from './lessons/drivechain-withdrawal'
 
-export const lessons: LessonData[] = [lessonData, layersMapLesson]
+export const lessons: LessonData[] = [lessonData, layersMapLesson, drivechainWithdrawalLesson]
 
 export const lessonsById: Record<string, LessonData> = Object.fromEntries(
   lessons.map((l) => [l.id, l]),
