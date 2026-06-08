@@ -607,7 +607,7 @@ body {
   border-style: dashed;
 }
 .ack__strip-note {
-  font-size: 0.78rem;
+  font-size: var(--fs-300);
   color: var(--text-faint);
 }
 .ack__callout {

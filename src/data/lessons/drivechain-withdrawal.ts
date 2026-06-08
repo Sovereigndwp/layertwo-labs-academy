@@ -220,7 +220,7 @@ export const drivechainWithdrawalLesson: LessonData = {
         thresholdLabel: 'Approval threshold',
         nextLabel: 'Why so slow',
         howWeKnow:
-          'a Bitcoin node enforcing BIP300 rejects any M6 withdrawal payout whose bundle has not reached the ACK threshold — the payout simply cannot be included in a block. In the reference Enforcer this is handle_m5_m6, which rejects an M6 whose vote_count has not exceeded WITHDRAWAL_BUNDLE_INCLUSION_THRESHOLD (WITHDRAWAL_BUNDLE_MAX_AGE / 2) — see src/bip300.rs in bip300301_enforcer. Falsifier — if a bundle ever paid out without crossing 13,150 ACKs, a full node would reject that block.',
+          'a Bitcoin node enforcing BIP300 rejects any M6 withdrawal payout whose bundle has not reached the ACK threshold — the payout simply cannot be included in a block. In the reference Enforcer this is handle_m5_m6, which rejects an M6 whose vote_count has not exceeded WITHDRAWAL_BUNDLE_INCLUSION_THRESHOLD (WITHDRAWAL_BUNDLE_MAX_AGE / 2). The 13,150 / 26,300 here are the BIP300 spec (mainnet) values; the Enforcer reference code at the pinned commit carries smaller TEST constants — so confirm which you are reading (see src/bip300.rs). Falsifier — if a bundle ever paid out without crossing the threshold, a full node would reject that block.',
         howWeKnowTermId: 'm6',
         analogyHelper:
           'the highway authority repeatedly voting to keep the off-ramp open so passengers may get off — one vote is not enough; they must keep re-approving it, in the open, for the whole window, or the off-ramp closes and no one gets off.',
