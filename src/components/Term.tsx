@@ -1,5 +1,4 @@
 import { Tooltip } from './Tooltip'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 
 /**
@@ -8,8 +7,8 @@ import { useLesson } from '../state/LessonProvider'
  * in the lesson should be wrapped in <Term> so nothing is undefined.
  */
 export function Term({ id, children }: { id: string; children?: React.ReactNode }) {
-  const { dispatch } = useLesson()
-  const entry = lessonData.glossary.find((g) => g.id === id)
+  const { dispatch, lesson } = useLesson()
+  const entry = lesson.glossary.find((g) => g.id === id)
   if (!entry) return <>{children ?? id}</>
 
   return (

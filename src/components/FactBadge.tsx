@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { lessonData } from '../data/lessonData'
+import { useLesson } from '../state/LessonProvider'
 
 /**
  * Factual guardrail as a quiet disclosure. It is present on every screen but
@@ -8,7 +8,8 @@ import { lessonData } from '../data/lessonData'
  * reachable everywhere without the visual noise of a persistent orange banner.
  */
 export function FactBadge() {
-  const { short, full } = lessonData.factBadge
+  const { lesson } = useLesson()
+  const { short, full } = lesson.factBadge
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const panelId = useId()

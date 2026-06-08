@@ -1,5 +1,4 @@
 import type { LessonStep } from '../data/lessonData'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { StepFrame } from './StepFrame'
 
@@ -10,15 +9,15 @@ import { StepFrame } from './StepFrame'
  * has an answer (any answer; feedback teaches either way).
  */
 export function ReflectionQuiz({ step }: { step: LessonStep }) {
-  const { state, dispatch } = useLesson()
-  const answered = lessonData.quiz.every((q) =>
+  const { state, dispatch, lesson } = useLesson()
+  const answered = lesson.quiz.every((q) =>
     state.quizAnswers.some((a) => a.questionId === q.id),
   )
 
   return (
     <StepFrame step={step} canAdvance={answered} nextLabel="See what comes next">
       <div className="quiz">
-        {lessonData.quiz.map((q) => {
+        {lesson.quiz.map((q) => {
           const picked = state.quizAnswers.find((a) => a.questionId === q.id)
           const pickedChoice = q.choices.find((c) => c.id === picked?.choiceId)
           return (

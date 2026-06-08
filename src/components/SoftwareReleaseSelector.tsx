@@ -1,5 +1,4 @@
 import type { LessonStep } from '../data/lessonData'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { StepFrame } from './StepFrame'
 import { SidechainProposalForm } from './SidechainProposalForm'
@@ -11,14 +10,14 @@ import { SidechainProposalForm } from './SidechainProposalForm'
  * freezing the software forever.
  */
 export function SoftwareReleaseSelector({ step }: { step: LessonStep }) {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
   const picked = state.selectedRelease
-  const pickedRelease = lessonData.releases.find((r) => r.id === picked)
+  const pickedRelease = lesson.releases.find((r) => r.id === picked)
 
   return (
     <StepFrame step={step} canAdvance={picked !== null}>
       <div className="card-grid card-grid--3" role="group" aria-label="Software releases">
-        {lessonData.releases.map((rel) => {
+        {lesson.releases.map((rel) => {
           const isPicked = picked === rel.id
           return (
             <button

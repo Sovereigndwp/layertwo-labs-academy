@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { lessonData, type LessonStep } from '../data/lessonData'
+import type { LessonStep } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { ProgressRail } from './ProgressRail'
 import { FactBadge } from './FactBadge'
@@ -12,6 +12,7 @@ import { SoftwareReleaseSelector } from './SoftwareReleaseSelector'
 import { AckTimeline } from './AckTimeline'
 import { ActivationStateCard } from './ActivationStateCard'
 import { NodeConnectionMap } from './NodeConnectionMap'
+import { LayerMap } from './LayerMap'
 import { ReflectionQuiz } from './ReflectionQuiz'
 import { AdvancedConceptLockbox } from './AdvancedConceptLockbox'
 
@@ -34,6 +35,8 @@ function StepRouter({ step }: { step: LessonStep }) {
       return <ActivationStateCard step={step} />
     case 'connect':
       return <NodeConnectionMap step={step} />
+    case 'layers':
+      return <LayerMap step={step} />
     case 'quiz':
       return <ReflectionQuiz step={step} />
     case 'advanced':
@@ -44,8 +47,8 @@ function StepRouter({ step }: { step: LessonStep }) {
 }
 
 export function LessonShell() {
-  const { state, dispatch } = useLesson()
-  const step = lessonData.steps[state.lessonStep]
+  const { state, dispatch, lesson } = useLesson()
+  const step = lesson.steps[state.lessonStep]
   const mainRef = useRef<HTMLElement>(null)
 
   // On every step change, jump back to the top (and move focus there for
@@ -67,7 +70,7 @@ export function LessonShell() {
           <span className="brand__dot" aria-hidden="true" />
           <span>
             LayerTwo Labs · Learn
-            <small>{lessonData.title}</small>
+            <small>{lesson.title}</small>
           </span>
         </div>
         <div style={{ display: 'flex', gap: 'var(--sp-2)', alignItems: 'center' }}>

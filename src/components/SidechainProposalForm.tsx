@@ -1,5 +1,4 @@
 import { useLesson } from '../state/LessonProvider'
-import { lessonData } from '../data/lessonData'
 
 /**
  * A compact, read-only recap of the proposal as it accumulates across steps.
@@ -7,8 +6,8 @@ import { lessonData } from '../data/lessonData'
  * sees the full "proposal" taking shape, not just the field in front of them.
  */
 export function SidechainProposalForm() {
-  const { state } = useLesson()
-  const release = lessonData.releases.find((r) => r.id === state.selectedRelease)
+  const { state, lesson } = useLesson()
+  const release = lesson.releases.find((r) => r.id === state.selectedRelease)
 
   const rows: { label: string; value: string; done: boolean }[] = [
     {

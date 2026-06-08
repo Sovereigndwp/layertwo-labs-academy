@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import type { LessonStep } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
-import { lessonData } from '../data/lessonData'
 
 /**
  * Every screen wears the same five beats:
@@ -20,14 +19,14 @@ export function StepFrame({
   canAdvance: boolean
   nextLabel?: string
 }) {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
   const isFirst = state.lessonStep === 0
-  const isLast = state.lessonStep === lessonData.steps.length - 1
+  const isLast = state.lessonStep === lesson.steps.length - 1
 
   return (
     <section className="step" aria-labelledby={`h-${step.id}`}>
       <p className="step__eyebrow">
-        Step {state.lessonStep + 1} of {lessonData.steps.length} · {step.navLabel}
+        Step {state.lessonStep + 1} of {lesson.steps.length} · {step.navLabel}
       </p>
       <h2 id={`h-${step.id}`} className="step__headline">
         {step.headline}

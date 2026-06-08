@@ -1,5 +1,4 @@
 import type { LessonStep } from '../data/lessonData'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { StepFrame } from './StepFrame'
 import { SidechainProposalForm } from './SidechainProposalForm'
@@ -12,13 +11,13 @@ import { Term } from './Term'
  * The learner may only advance once they have landed on a unique tag.
  */
 export function AddressBytesGame({ step }: { step: LessonStep }) {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
   const picked = state.addressBytes
 
   return (
     <StepFrame step={step} canAdvance={state.isAddressBytesUnique === true}>
       <div className="card-grid card-grid--3" role="group" aria-label="Identity tags">
-        {lessonData.addressByteTags.map((tag) => {
+        {lesson.addressByteTags.map((tag) => {
           const isPicked = picked === tag.label
           return (
             <button

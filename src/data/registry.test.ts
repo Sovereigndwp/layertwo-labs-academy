@@ -2,9 +2,10 @@ import { describe, it, expect } from 'vitest'
 import { lessons, lessonsById, getPrerequisiteGaps } from './registry'
 
 describe('registry', () => {
-  it('exposes at least the sidechain lesson', () => {
-    expect(lessons.length).toBeGreaterThanOrEqual(1)
+  it('exposes at least the two authored lessons', () => {
+    expect(lessons.length).toBeGreaterThanOrEqual(2)
     expect(lessonsById['create-a-sidechain']).toBeDefined()
+    expect(lessonsById['where-drivechain-sits']).toBeDefined()
   })
   it('every lesson id is unique', () => {
     const ids = lessons.map((l) => l.id)
@@ -16,6 +17,11 @@ describe('registry', () => {
         expect(lessonsById[p], `${l.id} -> ${p}`).toBeDefined()
       }
     }
+  })
+  it('lesson #2 declares its prerequisite on lesson #1', () => {
+    expect(lessonsById['where-drivechain-sits'].prerequisites).toContain(
+      'create-a-sidechain',
+    )
   })
 })
 

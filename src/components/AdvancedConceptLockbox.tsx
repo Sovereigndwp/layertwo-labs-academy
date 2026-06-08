@@ -1,17 +1,16 @@
 import type { LessonStep } from '../data/lessonData'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 import { StepFrame } from './StepFrame'
 
 /**
- * Module 9 — Advanced "For Miners" preview.
- * Locked until the learner opens it. We name the advanced topics (blind merged
- * mining, BIP300/301, withdrawals) but deliberately do NOT teach them here.
+ * Module 9 — Advanced preview.
+ * Locked until the learner opens it. We name the advanced topics but
+ * deliberately do NOT teach them here (per the lesson's `advanced` data).
  */
 export function AdvancedConceptLockbox({ step }: { step: LessonStep }) {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
   const unlocked = state.advancedUnlocked
-  const adv = lessonData.advanced
+  const adv = lesson.advanced
 
   return (
     <StepFrame step={step} canAdvance>
