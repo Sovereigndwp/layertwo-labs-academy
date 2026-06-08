@@ -102,6 +102,36 @@ export function lessonReducer(
     case 'RESET_ACKS':
       return { ...state, ackWindow: [], ackCount: 0 }
 
+    case 'MINE_BUNDLE': {
+      // Lesson #3: each mined block advances the window clock by 1 and moves the
+      // bundle's ACK count by +1 (honest support) or −1 (hostile majority),
+      // honoring the ±1-per-block rule. Once the window is exhausted, the bundle
+      // has expired and mining no longer changes the count.
+      const remaining = action.windowBlocks - state.bundleBlocksElapsed
+      if (remaining <= 0) return state
+      const blocks = Math.min(action.amount, remaining)
+      const elapsed = state.bundleBlocksElapsed + blocks
+      const delta = state.bundleHostile ? -blocks : blocks
+      // ACKs cannot exceed the threshold here (the bundle would have been
+      // approved at the threshold) and cannot go below zero.
+      const bundleAcks = Math.max(
+        0,
+        Math.min(action.threshold, state.bundleAcks + delta),
+      )
+      return { ...state, bundleAcks, bundleBlocksElapsed: elapsed }
+    }
+
+    case 'SET_BUNDLE_HOSTILE':
+      return { ...state, bundleHostile: action.hostile }
+
+    case 'RESET_BUNDLE':
+      return {
+        ...state,
+        bundleAcks: 0,
+        bundleBlocksElapsed: 0,
+        bundleHostile: false,
+      }
+
     case 'SET_ACK_THRESHOLD': {
       const clamped = Math.max(1008, Math.min(2016, action.count))
       return withAutoActivation({ ...state, ackThreshold: clamped })

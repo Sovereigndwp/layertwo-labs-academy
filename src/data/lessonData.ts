@@ -45,6 +45,52 @@ export interface LessonStep {
   body?: string[]
   /** Optional override for the "Next" button label (else the renderer default). */
   nextLabel?: string
+  /** Config for the `acks` interactive. Required in practice for kind:'acks'. */
+  acks?: AcksConfig
+  /**
+   * For kind:'quiz' steps: the ids of `lesson.quiz` questions this screen should
+   * show. When omitted, the screen shows every question (legacy default). This
+   * lets a lesson have two distinct reflection screens (e.g. a hostile-boundary
+   * sort and a final reflection) without rendering the same questions twice.
+   */
+  quizQuestionIds?: string[]
+}
+
+/**
+ * Per-step configuration for the `acks` interactive (AckTimeline). When present,
+ * it drives the component's window size, threshold, labels, callouts, falsifier
+ * and analogy helper from lesson data instead of lesson #1 constants — so the
+ * same renderer serves both the lesson #1 *slot-activation* vote and the lesson
+ * #3 *withdrawal-bundle* vote without carrying the other lesson's wording.
+ *
+ * `variant: 'activation'` keeps the original slot-activation screen (threshold
+ * probe, auto-activation). `variant: 'withdrawal'` renders the bundle vote: a
+ * countdown clock, a hostile-hashrate control, and an expiry/censorship outcome.
+ */
+export interface AcksConfig {
+  /** 'activation' = lesson #1 slot vote; 'withdrawal' = lesson #3 bundle vote. */
+  variant: 'activation' | 'withdrawal'
+  /** Total blocks in the vote window (e.g. 2016 for activation, 26300 for a bundle). */
+  windowBlocks: number
+  /** ACKs required to succeed (e.g. 1815 for activation, 13150 for a bundle). */
+  threshold: number
+  /** The thing being voted on, used in copy: 'slot' | 'withdrawal bundle'. */
+  subjectNoun: string
+  /** What success is called: 'activated' | 'approved'. */
+  successVerb: string
+  /** Short label for the meter target, e.g. 'Activation threshold' | 'Approval threshold'. */
+  thresholdLabel: string
+  /** Next-button label, e.g. 'See what activated' | 'Why so slow'. */
+  nextLabel: string
+  /** The "How we know" / falsifier copy shown inside the interactive. */
+  howWeKnow: string
+  /** Optional glossary Term id to link inside howWeKnow (rendered before the text). */
+  howWeKnowTermId?: string
+  /** The subordinate analogy-helper line (lesson-specific, in-world). */
+  analogyHelper: string
+  /** Activation-variant threshold-probe slider bounds. Omitted for withdrawal. */
+  sliderMin?: number
+  sliderMax?: number
 }
 
 export interface GlossaryTerm {
@@ -343,6 +389,21 @@ export const lessonData: LessonData = {
       actionHint:
         'Mine blocks with and without support, and move the bar, to see why the software sets it near 90% — and what miner power means.',
       why: 'Setting the bar near 90% (not a bare majority) makes it hard for a small group to force a sidechain through — but a determined ~10% can also stall one. Ultimately miners collectively hold the power: supporters say they are already trusted to order blocks, critics say it is too much. Either way the rule is public and every node checks it.',
+      acks: {
+        variant: 'activation',
+        windowBlocks: 2016,
+        threshold: 1815,
+        subjectNoun: 'slot',
+        successVerb: 'activated',
+        thresholdLabel: 'Activation threshold',
+        nextLabel: 'See what activated',
+        howWeKnow:
+          'the Enforcer activates an unused slot at 1815 of 2016 blocks (~90%) — see lib/types.rs in bip300301_enforcer. Every full node checks this against the public block history. Falsifier — a sidechain that activated without ~90% sustained support over its window would be rejected by nodes running the Enforcer.',
+        analogyHelper:
+          'the highway authority repeatedly voting to open a new exit — one vote is not enough; they must keep voting, in the open, for the exit to open.',
+        sliderMin: 1008,
+        sliderMax: 2016,
+      },
     },
     {
       id: 'activation',

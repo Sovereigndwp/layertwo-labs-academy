@@ -53,3 +53,59 @@ describe('automatic activation', () => {
     expect(s.activationStatus).toBe('active')
   })
 })
+
+describe('lesson #3 withdrawal-bundle vote', () => {
+  const mineBundle = (
+    state: typeof initialLessonState,
+    amount: number,
+  ) =>
+    lessonReducer(state, {
+      type: 'MINE_BUNDLE',
+      amount,
+      windowBlocks: 26300,
+      threshold: 13150,
+    })
+
+  it('honest support climbs the ACK count by 1 per block and advances the window', () => {
+    const s = mineBundle(initialLessonState, 5000)
+    expect(s.bundleAcks).toBe(5000)
+    expect(s.bundleBlocksElapsed).toBe(5000)
+  })
+
+  it('reaches the 13,150 approval threshold with sustained support', () => {
+    const s = mineBundle(initialLessonState, 13150)
+    expect(s.bundleAcks).toBe(13150) // approved (>= threshold)
+    expect(s.bundleAcks).toBeGreaterThanOrEqual(13150)
+  })
+
+  it('a hostile majority drives the ACK count DOWN by 1 per block (censorship)', () => {
+    let s = mineBundle(initialLessonState, 5000) // climb to 5000
+    expect(s.bundleAcks).toBe(5000)
+    s = lessonReducer(s, { type: 'SET_BUNDLE_HOSTILE', hostile: true })
+    s = mineBundle(s, 5000) // hostile: count falls
+    expect(s.bundleAcks).toBe(0) // floored at 0, never negative
+  })
+
+  it('a sustained hostile majority lets the window expire below threshold (censored, unpaid)', () => {
+    let s = lessonReducer(initialLessonState, { type: 'SET_BUNDLE_HOSTILE', hostile: true })
+    s = mineBundle(s, 26300) // run the whole window hostile
+    expect(s.bundleBlocksElapsed).toBe(26300) // window exhausted
+    expect(s.bundleAcks).toBeLessThan(13150) // never approved
+  })
+
+  it('does not advance past the window once expired', () => {
+    let s = mineBundle(initialLessonState, 26300) // exhaust the window
+    expect(s.bundleBlocksElapsed).toBe(26300)
+    s = mineBundle(s, 1000) // further mining is a no-op
+    expect(s.bundleBlocksElapsed).toBe(26300)
+  })
+
+  it('RESET_BUNDLE clears acks, elapsed, and hostile', () => {
+    let s = mineBundle(initialLessonState, 3000)
+    s = lessonReducer(s, { type: 'SET_BUNDLE_HOSTILE', hostile: true })
+    s = lessonReducer(s, { type: 'RESET_BUNDLE' })
+    expect(s.bundleAcks).toBe(0)
+    expect(s.bundleBlocksElapsed).toBe(0)
+    expect(s.bundleHostile).toBe(false)
+  })
+})

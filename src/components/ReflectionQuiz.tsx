@@ -10,14 +10,19 @@ import { StepFrame } from './StepFrame'
  */
 export function ReflectionQuiz({ step }: { step: LessonStep }) {
   const { state, dispatch, lesson } = useLesson()
-  const answered = lesson.quiz.every((q) =>
+  // A quiz step may show only a subset of the lesson's questions (so two
+  // reflection screens can ask different things). Default: the whole array.
+  const questions = step.quizQuestionIds
+    ? lesson.quiz.filter((q) => step.quizQuestionIds!.includes(q.id))
+    : lesson.quiz
+  const answered = questions.every((q) =>
     state.quizAnswers.some((a) => a.questionId === q.id),
   )
 
   return (
     <StepFrame step={step} canAdvance={answered} nextLabel="See what comes next">
       <div className="quiz">
-        {lesson.quiz.map((q) => {
+        {questions.map((q) => {
           const picked = state.quizAnswers.find((a) => a.questionId === q.id)
           const pickedChoice = q.choices.find((c) => c.id === picked?.choiceId)
           return (
