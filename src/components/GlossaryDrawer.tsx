@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 
 /**
@@ -8,7 +7,7 @@ import { useLesson } from '../state/LessonProvider'
  * entry is highlighted and scrolled into view.
  */
 export function GlossaryDrawer() {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
   const closeRef = useRef<HTMLButtonElement>(null)
   const focusItemRef = useRef<HTMLDivElement>(null)
 
@@ -54,7 +53,7 @@ export function GlossaryDrawer() {
           </button>
         </div>
         <dl className="drawer__body">
-          {lessonData.glossary.map((g) => {
+          {lesson.glossary.map((g) => {
             const isFocus = g.id === state.glossaryFocusTerm
             return (
               <div

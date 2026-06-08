@@ -20,6 +20,7 @@ export type StepKind =
   | 'acks'
   | 'activation'
   | 'connect'
+  | 'layers'
   | 'quiz'
   | 'advanced'
 
@@ -42,6 +43,8 @@ export interface LessonStep {
   why: string
   /** Optional extra paragraphs for first-principles screens. */
   body?: string[]
+  /** Optional override for the "Next" button label (else the renderer default). */
+  nextLabel?: string
 }
 
 export interface GlossaryTerm {
@@ -87,6 +90,34 @@ export interface SourceNote {
   detail: string
 }
 
+/**
+ * One Bitcoin "layer" card for the LayerMap interactive (lesson #2). The card
+ * teaches a layer's real trust tradeoff, not a brittle stat: its custody/trust
+ * model, what you give up, and the falsifier "who can stop you exiting?".
+ */
+export interface LayerInfo {
+  id: string
+  name: string
+  /** The road/transport metaphor element (analogy world = roads). */
+  metaphor: string
+  /** Short custody/trust-model label, e.g. 'Self-custody' or 'Federation'. */
+  trustModel: string
+  /** Maturity — rendered as icon + text, never color alone. */
+  maturity: 'live' | 'proposed' | 'emerging'
+  /** One honest tradeoff: what you give up for what this layer buys you. */
+  tradeoff: string
+  /** Falsifier answer: who, if anyone, can stop you exiting/withdrawing. */
+  whoCanStopExit: string
+  /** What happens to your exit if the operator/federation/miners turn hostile. */
+  hostileOutcome: 'holds' | 'degrades' | 'fails'
+  /** Position on the trust axis: 0 = trustless, 100 = trusted third party. */
+  trust: number
+  /** Position on the finality axis: 0 = instant self-custodial, 100 = slow/voted. */
+  finality: number
+  /** Ids of the VerifiableClaims that back this card. */
+  claimIds: string[]
+}
+
 export interface LessonData {
   id: string
   summary: string
@@ -96,6 +127,9 @@ export interface LessonData {
   prerequisites: string[]
   claims: VerifiableClaim[]
   analogy: LessonAnalogy
+  /** Layer cards for the LayerMap interactive (lesson #2). Optional: most
+   *  lessons don't have a layer map. */
+  layers?: LayerInfo[]
   slug: string
   title: string
   promise: string
@@ -248,6 +282,7 @@ export const lessonData: LessonData = {
         'Imagine Bitcoin as one busy main road that everyone trusts. A sidechain is a separate road connected to it, for people who want to try something different. Drivechain is a proposed way to let people build those new roads without forcing every Bitcoin user to drive on them.',
       actionHint: 'Read the analogy, then continue.',
       why: 'New ideas can be tried on a side road. If a side road fails, the main road keeps working.',
+      nextLabel: 'Start with the basics',
     },
     {
       id: 'principles',
@@ -264,6 +299,7 @@ export const lessonData: LessonData = {
         'There are 256 so the number of sidechains stays small and reviewable — not unlimited noise.',
         'Most people will never make one. But anyone deserves to understand how it would happen.',
       ],
+      nextLabel: 'Choose a slot',
     },
     {
       id: 'slot',

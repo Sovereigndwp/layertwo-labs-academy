@@ -9,7 +9,8 @@
 
 /** Bump when the persisted shape changes incompatibly. */
 // v2: corrected ackThreshold default to 1815 (~90%) + added ackWindow; discard stale v1 saves.
-export const STORAGE_VERSION = 2
+// v3: added lesson-#2 fields (exploredLayers, hostileProbed, drivechainPlaced); discard stale v2 saves.
+export const STORAGE_VERSION = 3
 
 export type ActivationStatus =
   | 'not proposed'
@@ -61,6 +62,14 @@ export interface LessonState {
   /** Whether the sidechain is connected to the Bitcoin node (Bitcoin Core + Enforcer). */
   nodeConnected: boolean
 
+  // --- Lesson #2 (Where Drivechain Sits): the LayerMap interactive ---
+  /** Ids of layer cards the learner has opened/explored. */
+  exploredLayers: string[]
+  /** True once the learner has toggled the "operator turns hostile" probe. */
+  hostileProbed: boolean
+  /** True once the learner has placed Drivechain on the trust×finality plane. */
+  drivechainPlaced: boolean
+
   // --- Module 8: Reflection / quiz ---
   quizAnswers: QuizAnswer[]
 
@@ -82,6 +91,9 @@ export const initialLessonState: LessonState = {
   addressBytes: null,
   isAddressBytesUnique: null,
   selectedRelease: null,
+  exploredLayers: [],
+  hostileProbed: false,
+  drivechainPlaced: false,
   ackCount: 0,
   ackThreshold: 1815, // ~90% (Enforcer: unused slot activates at 1815 of a 2016-block window)
   ackWindow: [],
@@ -101,6 +113,9 @@ export type LessonAction =
   | { type: 'SET_SIDECHAIN_NAME'; name: string }
   | { type: 'SET_ADDRESS_BYTES'; tag: string; unique: boolean }
   | { type: 'SELECT_RELEASE'; releaseId: string }
+  | { type: 'EXPLORE_LAYER'; layerId: string }
+  | { type: 'SET_HOSTILE_PROBED' }
+  | { type: 'PLACE_DRIVECHAIN' }
   | { type: 'MINE_BLOCKS'; amount: number; supporting: boolean }
   | { type: 'SET_ACK_THRESHOLD'; count: number }
   | { type: 'RESET_ACKS' }

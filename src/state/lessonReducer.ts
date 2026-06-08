@@ -4,12 +4,16 @@ import {
   type LessonAction,
   type LessonState,
 } from './types'
-import { lessonData } from '../data/lessonData'
 
-const LAST_STEP = lessonData.steps.length - 1
-
-function clampStep(step: number): number {
-  return Math.max(0, Math.min(LAST_STEP, step))
+/**
+ * Clamp a step index into [0, stepCount-1]. `stepCount` is supplied by the
+ * provider from the *active* lesson, so the engine is lesson-agnostic (lessons
+ * have different step counts). When omitted (e.g. in unit tests), only the
+ * lower bound is enforced.
+ */
+function clampStep(step: number, stepCount?: number): number {
+  const upper = stepCount === undefined ? Infinity : stepCount - 1
+  return Math.max(0, Math.min(upper, step))
 }
 
 /**
@@ -32,16 +36,17 @@ function withAutoActivation(state: LessonState): LessonState {
 export function lessonReducer(
   state: LessonState,
   action: LessonAction,
+  stepCount?: number,
 ): LessonState {
   switch (action.type) {
     case 'GO_TO_STEP':
-      return { ...state, lessonStep: clampStep(action.step) }
+      return { ...state, lessonStep: clampStep(action.step, stepCount) }
 
     case 'NEXT_STEP':
-      return { ...state, lessonStep: clampStep(state.lessonStep + 1) }
+      return { ...state, lessonStep: clampStep(state.lessonStep + 1, stepCount) }
 
     case 'PREV_STEP':
-      return { ...state, lessonStep: clampStep(state.lessonStep - 1) }
+      return { ...state, lessonStep: clampStep(state.lessonStep - 1, stepCount) }
 
     case 'SELECT_SLOT':
       return { ...state, selectedSlot: action.slot }
@@ -58,6 +63,17 @@ export function lessonReducer(
 
     case 'SELECT_RELEASE':
       return { ...state, selectedRelease: action.releaseId }
+
+    case 'EXPLORE_LAYER':
+      return state.exploredLayers.includes(action.layerId)
+        ? state
+        : { ...state, exploredLayers: [...state.exploredLayers, action.layerId] }
+
+    case 'SET_HOSTILE_PROBED':
+      return state.hostileProbed ? state : { ...state, hostileProbed: true }
+
+    case 'PLACE_DRIVECHAIN':
+      return state.drivechainPlaced ? state : { ...state, drivechainPlaced: true }
 
     case 'MINE_BLOCKS': {
       const win = state.ackWindow.map((r) => ({ ...r }))

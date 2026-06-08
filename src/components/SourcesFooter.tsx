@@ -1,5 +1,5 @@
 import { ClaimChip } from './ClaimChip'
-import { lessonData } from '../data/lessonData'
+import { useLesson } from '../state/LessonProvider'
 
 /**
  * Sources, verifiable claims, and the accuracy note — collapsed into a dropdown
@@ -8,7 +8,8 @@ import { lessonData } from '../data/lessonData'
  * expanded/collapsed state is announced).
  */
 export function SourcesFooter() {
-  const claimCount = lessonData.claims.length
+  const { lesson } = useLesson()
+  const claimCount = lesson.claims.length
   return (
     <footer className="sources">
       <details className="sources__disclosure">
@@ -28,7 +29,7 @@ export function SourcesFooter() {
                 What this lesson claims — and how we know
               </h3>
               <ul className="claimlist">
-                {lessonData.claims.map((c) => (
+                {lesson.claims.map((c) => (
                   <li key={c.id}>
                     <ClaimChip claim={c} />
                   </li>
@@ -37,7 +38,7 @@ export function SourcesFooter() {
             </section>
           )}
           <dl>
-            {lessonData.sources.map((s) => (
+            {lesson.sources.map((s) => (
               <div key={s.label}>
                 <dt>{s.label}</dt>
                 <dd>{s.detail}</dd>

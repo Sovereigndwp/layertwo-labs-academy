@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -7,10 +8,15 @@ import {
 } from 'react'
 import { lessonReducer } from './lessonReducer'
 import { initialLessonState, STORAGE_VERSION, type LessonAction, type LessonState } from './types'
+import { lessonsById } from '../data/registry'
+import type { LessonData } from '../data/lessonData'
 
 interface LessonContextValue {
   state: LessonState
   dispatch: React.Dispatch<LessonAction>
+  /** The active lesson's content. The engine is lesson-agnostic; every renderer
+   *  reads its copy/data from here rather than a hardcoded import. */
+  lesson: LessonData
 }
 
 const LessonContext = createContext<LessonContextValue | null>(null)
@@ -22,9 +28,19 @@ export function LessonProvider({
   lessonId: string
   children: ReactNode
 }) {
+  const lesson = lessonsById[lessonId]
+  if (!lesson) throw new Error(`Unknown lessonId: ${lessonId}`)
+
   const storageKey = `l2l:lesson:${lessonId}:v${STORAGE_VERSION}`
 
-  const [state, dispatch] = useReducer(lessonReducer, initialLessonState, () => {
+  // Clamp step transitions to *this* lesson's length (lessons differ in size).
+  const stepCount = lesson.steps.length
+  const reducer = useCallback(
+    (s: LessonState, a: LessonAction) => lessonReducer(s, a, stepCount),
+    [stepCount],
+  )
+
+  const [state, dispatch] = useReducer(reducer, initialLessonState, () => {
     try {
       const raw = localStorage.getItem(storageKey)
       if (!raw) return initialLessonState
@@ -44,7 +60,7 @@ export function LessonProvider({
   }, [state, storageKey])
 
   return (
-    <LessonContext.Provider value={{ state, dispatch }}>
+    <LessonContext.Provider value={{ state, dispatch, lesson }}>
       {children}
     </LessonContext.Provider>
   )

@@ -7,7 +7,7 @@ import { Term } from './Term'
  */
 export function HookScreen({ step }: { step: LessonStep }) {
   return (
-    <StepFrame step={step} canAdvance nextLabel="Start with the basics">
+    <StepFrame step={step} canAdvance nextLabel={step.nextLabel ?? 'Continue'}>
       <div className="hook__road">
         <div className="road road--main">
           <span className="road__label">Bitcoin</span>
@@ -42,7 +42,7 @@ export function HookScreen({ step }: { step: LessonStep }) {
  */
 export function PrinciplesScreen({ step }: { step: LessonStep }) {
   return (
-    <StepFrame step={step} canAdvance nextLabel="Choose a slot">
+    <StepFrame step={step} canAdvance nextLabel={step.nextLabel ?? 'Continue'}>
       <div className="card-grid">
         {(step.body ?? []).map((line, i) => (
           <div key={i} className="card principle">

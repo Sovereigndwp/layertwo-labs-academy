@@ -1,6 +1,7 @@
 import { lessonData, type LessonData } from './lessonData'
+import { layersMapLesson } from './lessons/layers-map'
 
-export const lessons: LessonData[] = [lessonData]
+export const lessons: LessonData[] = [lessonData, layersMapLesson]
 
 export const lessonsById: Record<string, LessonData> = Object.fromEntries(
   lessons.map((l) => [l.id, l]),

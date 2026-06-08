@@ -1,4 +1,3 @@
-import { lessonData } from '../data/lessonData'
 import { useLesson } from '../state/LessonProvider'
 
 /**
@@ -6,11 +5,11 @@ import { useLesson } from '../state/LessonProvider'
  * current one), but not skip ahead — keeping the one-idea-at-a-time flow.
  */
 export function ProgressRail() {
-  const { state, dispatch } = useLesson()
+  const { state, dispatch, lesson } = useLesson()
 
   return (
     <ol className="rail" aria-label="Lesson progress">
-      {lessonData.steps.map((s, i) => {
+      {lesson.steps.map((s, i) => {
         const isCurrent = i === state.lessonStep
         const isDone = i < state.lessonStep
         const reachable = i <= state.lessonStep
